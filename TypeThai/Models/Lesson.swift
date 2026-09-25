@@ -7,8 +7,24 @@
 import Foundation
 
 struct Lesson: Identifiable, Codable {
-    let id = UUID()
+    var id = UUID()
     let name: String
     let desc: String
     let vocabContent: [VocabWord]
+}
+
+struct LessonStep: Identifiable {
+    let id = UUID()
+    let type: LessonStepType // if is speaking require the user to speak into the game first
+    let thai: String //sfspeechanalyzer matches text to this?
+    let pronunciation: String?
+    let english: String?
+    let explanation: String?
+}
+
+enum LessonStepType {
+    case character
+    case explanation
+    case word
+    case speaking
 }

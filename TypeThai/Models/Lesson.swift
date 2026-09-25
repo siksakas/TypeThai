@@ -6,11 +6,13 @@
 //
 import Foundation
 
-struct Lesson: Identifiable, Codable {
+struct Lesson: Identifiable {
     var id = UUID()
     let name: String
     let desc: String
     let vocabContent: [VocabWord]
+    let steps: [LessonStep]
+    var isComplete: Bool
 }
 
 struct LessonStep: Identifiable {
@@ -20,6 +22,7 @@ struct LessonStep: Identifiable {
     let pronunciation: String?
     let english: String?
     let explanation: String?
+    let requiresSpeaking: Bool
 }
 
 enum LessonStepType {

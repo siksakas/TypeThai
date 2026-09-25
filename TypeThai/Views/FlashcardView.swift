@@ -3,6 +3,7 @@ import SwiftUI
 struct FlashcardView: View {
     
     let currword: VocabWord
+    let showPronunciation: Bool
     
     var body: some View {
         VStack(spacing: 24) {
@@ -40,16 +41,19 @@ struct FlashcardView: View {
             
             Divider()
             
-            HStack {
-                Image(systemName: "speaker.wave.2.fill")
-                    .foregroundStyle(.orange)
-                
-                Text("Tap to hear pronunciation")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                
-                Spacer()
+            if showPronunciation {
+                HStack {
+                    Image(systemName: "speaker.wave.2.fill")
+                        .foregroundStyle(.orange)
+                    
+                    Text("Tap to hear pronunciation")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                    
+                    Spacer()
+                }
             }
+            
         }
         .padding(28)
         .frame(width: 350, height: 400)
@@ -75,6 +79,6 @@ struct FlashcardView: View {
         Color(.systemGroupedBackground)
             .ignoresSafeArea()
         
-        FlashcardView(currword: exampleWord)
+        FlashcardView(currword: exampleWord,showPronunciation: true)
     }
 }

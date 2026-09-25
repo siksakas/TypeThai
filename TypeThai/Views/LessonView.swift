@@ -8,33 +8,34 @@
 import SwiftUI
 
 struct LessonView: View {
-    @State var currentLesson: [VocabWord]
-    @State var currentSteps: [LessonStep]
+    var thisLesson: Lesson
+    //thisLesson.vocabContent
+    //thisLesson.steps
     @State var currentIndex = 0
 
-    // Treat nil and "none" the same way
+    // here we treat nil and "none" the same way
     private var currentExplanation: String? {
-        guard let explanation = currentSteps[currentIndex].explanation,
+        guard let explanation = thisLesson.steps[currentIndex].explanation,
               explanation != "none" else { return nil }
         return explanation
     }
 
     private var lastIndex: Int {
-        min(currentLesson.count, currentSteps.count) - 1
+        min(thisLesson.vocabContent.count, thisLesson.steps.count) - 1
     }
 
     var body: some View {
         VStack(spacing: 20) {
-            FlashcardView(currword: currentLesson[currentIndex])
+            FlashcardView(currword: thisLesson.vocabContent[currentIndex],showPronunciation:!thisLesson.steps[currentIndex].requiresSpeaking)
                 .padding(.top, 84)
 
-            // Explanation slot: zero height when empty, grows when filled
             ZStack {
                 if let explanation = currentExplanation {
                     Text(explanation)
                         .fontWeight(.semibold)
                         .foregroundStyle(.white)
-                        .padding(10)
+                        .padding(.vertical, 16)
+                        .padding(.horizontal, 24)
                         .frame(maxWidth: .infinity)
                         .background {
                             RoundedRectangle(cornerRadius: 10)
@@ -87,8 +88,13 @@ struct LessonView: View {
                 }
             } label: {
                 HStack {
-                    Text("Next").fontWeight(.semibold)
-                    Image(systemName: "arrow.right")
+                    if thisLesson.steps[currentIndex].requiresSpeaking {
+                        Image(systemName: "microphone.fill")
+                    } else {
+                        Text("Next").fontWeight(.semibold)
+                        Image(systemName: "arrow.right")
+                    }
+//                    Image(systemName: currentSteps[currentIndex].requiresSpeaking ? "" : "arrow.right")
                 }
                 .foregroundStyle(.white)
                 .frame(maxWidth: .infinity)
@@ -125,5 +131,5 @@ private extension View {
 }
 
 #Preview {
-    LessonView(currentLesson: lessonOneWords, currentSteps: lessonOneSteps)
+    LessonView(thisLesson: lessons[0])
 }

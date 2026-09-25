@@ -11,94 +11,119 @@ struct LessonView: View {
     @State var currentLesson: [VocabWord]
     @State var currentSteps: [LessonStep]
     @State var currentIndex = 0
-    
+
+    // Treat nil and "none" the same way
+    private var currentExplanation: String? {
+        guard let explanation = currentSteps[currentIndex].explanation,
+              explanation != "none" else { return nil }
+        return explanation
+    }
+
+    private var lastIndex: Int {
+        min(currentLesson.count, currentSteps.count) - 1
+    }
+
     var body: some View {
-        FlashcardView(currword: currentLesson[currentIndex])
-        if(currentSteps[currentIndex].explanation != "none"){
-            if let explanation = currentSteps[currentIndex].explanation {
-                VStack(spacing: 10){
-                    HStack {
-                        Text(explanation)
-                            .fontWeight(.semibold)
-                            .foregroundStyle(Color.white)
-                            .padding(.vertical, 10)
-                            .padding(.horizontal, 10)
-                            .frame(maxWidth: .infinity)
-                            .background {
-                                RoundedRectangle(cornerRadius: 10)
-                                    .fill(Color.orange)
-                            }
-                            
-                    }
-                    .padding(.horizontal, 24)
-                }
-            }
-        }
-        GeometryReader { geometry in
-            let spacing: CGFloat = 12
-            let fullWidth = geometry.size.width
-            let halfWidth = (fullWidth - spacing) / 2
+        VStack(spacing: 20) {
+            FlashcardView(currword: currentLesson[currentIndex])
+                .padding(.top, 84)
 
-            HStack(spacing: currentIndex == 0 ? 0 : spacing) {
-
-                Button {
-                    withAnimation(.easeInOut(duration: 0.25)) {
-                        currentIndex -= 1
-                    }
-                } label: {
-                    HStack {
-                        Image(systemName: "arrow.left")
-
-                        Text("Back")
-                            .fontWeight(.semibold)
-                    }
-                    .foregroundStyle(.white)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 16)
-                    .background {
-                        RoundedRectangle(cornerRadius: 16)
-                            .fill(Color.orange)
-                    }
-                }
-                .frame(width: currentIndex == 0 ? 0 : halfWidth)
-                .opacity(currentIndex == 0 ? 0 : 1)
-                .disabled(currentIndex == 0)
-
-                Button {
-                    if currentIndex < currentLesson.count - 1 {
-                        withAnimation(.easeInOut(duration: 0.25)) {
-                            currentIndex += 1
+            // Explanation slot: zero height when empty, grows when filled
+            ZStack {
+                if let explanation = currentExplanation {
+                    Text(explanation)
+                        .fontWeight(.semibold)
+                        .foregroundStyle(.white)
+                        .padding(10)
+                        .frame(maxWidth: .infinity)
+                        .background {
+                            RoundedRectangle(cornerRadius: 10)
+                                .fill(Color.orange)
                         }
-                    }
-                } label: {
-                    HStack {
-                        Text("Next")
-                            .fontWeight(.semibold)
-
-                        Image(systemName: "arrow.right")
-                    }
-                    .foregroundStyle(.white)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 16)
-                    .background {
-                        RoundedRectangle(cornerRadius: 16)
-                            .fill(Color.orange)
-                    }
+                        .padding(.horizontal, 24)
+                        .id(currentIndex) // new view per step → re-triggers the slide
+                        .transition(
+                            .asymmetric(
+                                insertion: .move(edge: .leading).combined(with: .opacity),
+                                removal: .move(edge: .trailing).combined(with: .opacity)
+                            )
+                        )
                 }
-                .frame(
-                    width: currentIndex == 0
-                        ? fullWidth
-                        : halfWidth
-                )
             }
-            .animation(.easeInOut(duration: 0.25), value: currentIndex)
+            .frame(maxWidth: .infinity)
+
+            navigationButtons
+
+            Spacer() // keeps everything anchored to the top
+        }
+        .animation(.easeInOut(duration: 0.25), value: currentIndex)
+    }
+
+    private var navigationButtons: some View {
+        HStack(spacing: currentIndex == 0 ? 0 : 12) {
+            Button {
+                if currentIndex > 0 {
+                    currentIndex -= 1
+                }
+            } label: {
+                HStack {
+                    Image(systemName: "arrow.left")
+                    Text("Back").fontWeight(.semibold)
+                }
+                .foregroundStyle(.white)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 16)
+                .background {
+                    RoundedRectangle(cornerRadius: 16).fill(Color.orange)
+                }
+            }
+            .frame(maxWidth: currentIndex == 0 ? 0 : .infinity)
+            .opacity(currentIndex == 0 ? 0 : 1)
+            .disabled(currentIndex == 0)
+
+            Button {
+                if currentIndex < lastIndex {
+                    currentIndex += 1
+                }
+            } label: {
+                HStack {
+                    Text("Next").fontWeight(.semibold)
+                    Image(systemName: "arrow.right")
+                }
+                .foregroundStyle(.white)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 16)
+                .background {
+                    RoundedRectangle(cornerRadius: 16).fill(Color.orange)
+                }
+            }
+            .frame(maxWidth: .infinity)
         }
         .frame(height: 55)
         .padding(.horizontal, 24)
-        
+        .groupedGeometryIfAvailable() // animate the whole row as one unit
+    }
+}
+
+// MARK: - Backward-compatible geometryGroup
+
+private struct GroupedGeometry: ViewModifier {
+    func body(content: Content) -> some View {
+        if #available(iOS 17.0, macOS 14.0, *) {
+            content.geometryGroup()
+        } else {
+            // Older OS: fall back to compositing the row into a single layer
+            content.compositingGroup()
+        }
+    }
+}
+
+private extension View {
+    func groupedGeometryIfAvailable() -> some View {
+        modifier(GroupedGeometry())
     }
 }
 
 #Preview {
-    LessonView(currentLesson: lessonOneWords,currentSteps: lessonOneSteps)
+    LessonView(currentLesson: lessonOneWords, currentSteps: lessonOneSteps)
 }

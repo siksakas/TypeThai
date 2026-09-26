@@ -13,7 +13,7 @@ struct LessonView: View {
     //thisLesson.steps
     @State var currentIndex = 0
     
-    private let transcriber = LiveTranscriber()
+    @State private var transcriber = LiveTranscriber()
     // store whatever text it hears
     @State private var transcript = ""
     @State private var isListening = false
@@ -65,6 +65,9 @@ struct LessonView: View {
             Spacer() // keeps everything anchored to the top
         }
         .animation(.easeInOut(duration: 0.25), value: currentIndex)
+        .task {
+                await requestPermissions()
+        }
     }
 
     private var navigationButtons: some View {
@@ -92,7 +95,7 @@ struct LessonView: View {
             Button {
                 // this has to be checked BEFORE adding to the index or else it starts one step too early
                 if thisLesson.steps[currentIndex].requiresSpeaking {
-                    requestPermissions()
+                    
                     print("pressed!")
                     if isListening {
                         transcriber.stop()
@@ -102,13 +105,12 @@ struct LessonView: View {
                         do {
                             try transcriber.start { text in
                                 transcript = text
+                                isListening = true
                             }
                             print("transcriber enabled")
                         } catch {
                             print("something went wrong")
                         }
-                        
-                        isListening = true
                     }
                 }
                 if currentIndex < lastIndex {

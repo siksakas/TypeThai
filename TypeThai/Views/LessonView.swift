@@ -9,10 +9,7 @@ import SwiftUI
 
 struct LessonView: View {
     var thisLesson: Lesson
-    //thisLesson.vocabContent
-    //thisLesson.steps
     @State var currentIndex = 0
-    
     @State private var transcriber = LiveTranscriber()
     // store whatever text it hears
     @State private var transcript = ""
@@ -62,6 +59,9 @@ struct LessonView: View {
 
             navigationButtons
 
+            HStack{
+                Text("transcript text here")
+            }
             Spacer() // keeps everything anchored to the top
         }
         .animation(.easeInOut(duration: 0.25), value: currentIndex)
@@ -135,11 +135,12 @@ struct LessonView: View {
             }
             .frame(maxWidth: .infinity)
             
-            Text(transcript)
+            
         }
         .frame(height: 55)
         .padding(.horizontal, 24)
         .groupedGeometryIfAvailable() // animate the whole row as one unit
+        
     }
 }
 

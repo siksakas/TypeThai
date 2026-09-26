@@ -16,11 +16,19 @@ final class LiveTranscriber {
     
     // Stores the active speech recognition task
     private var task: SFSpeechRecognitionTask?
+    
+    // Tracks whether we're currently listening
+    // so start() can't install a second tap
+    private var isRunning = false
 
     
     // Starts listening to the microphone
     // onText is a function that gets called whenever new text is recognized
     func start(onText: @escaping (String) -> Void) throws {
+        
+        // Already listening? Don't start again
+        // (a second installTap on bus 0 crashes the app)
+        guard !isRunning else { return }
         
         #if os(iOS)
         
@@ -60,6 +68,10 @@ final class LiveTranscriber {
         // Get the microphone input from the audio engine
         let input = engine.inputNode
         
+        // Remove any leftover tap from a previous run
+        // so installing a new one can't crash
+        input.removeTap(onBus: 0)
+        
         // Add a "tap" to the microphone
         // A tap lets us receive chunks of audio while the user speaks
         input.installTap(
@@ -67,6 +79,10 @@ final class LiveTranscriber {
             bufferSize: 1024,
             format: input.outputFormat(forBus: 0)
         ) { buffer, _ in
+            
+            // Skip empty buffers
+            // (these cause the "mDataByteSize (0)" warning)
+            guard buffer.frameLength > 0 else { return }
             
             // Every time we receive another chunk of microphone audio,
             // send that audio to the speech recognition request
@@ -78,7 +94,16 @@ final class LiveTranscriber {
         engine.prepare()
         
         // Actually begin listening to the microphone
-        try engine.start()
+        // If it fails, clean up (including the tap) before passing the error on
+        do {
+            try engine.start()
+        } catch {
+            stop()
+            throw error
+        }
+        
+        // We're now listening
+        isRunning = true
 
         
         // Start the actual speech recognition task
@@ -112,6 +137,9 @@ final class LiveTranscriber {
     
     // Stops live speech recognition
     func stop() {
+        
+        // No longer listening
+        isRunning = false
         
         engine.stop()
         

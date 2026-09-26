@@ -35,7 +35,7 @@ struct LessonView: View {
                         .fontWeight(.semibold)
                         .foregroundStyle(.white)
                         .padding(.vertical, 16)
-                        .padding(.horizontal, 24)
+                        .padding(.horizontal, 16)
                         .frame(maxWidth: .infinity)
                         .background {
                             RoundedRectangle(cornerRadius: 10)

@@ -31,6 +31,12 @@ let lessonOneWords: [VocabWord] = [
         type: "Word"
     ),
     VocabWord(
+        thai: "กา",
+        pronunciation: "kaa",
+        english: "crow",
+        type: "Word"
+    ),
+    VocabWord(
         thai: "มา",
         pronunciation: "maa",
         english: "come",
@@ -71,7 +77,14 @@ let lessonOneSteps: [LessonStep] = [
         explanation: "none",
         requiresSpeaking: false
     ),
-
+    LessonStep(
+        type: .word,
+        thai: "กา",
+        pronunciation: "maa",
+        english: "come",
+        explanation: "Here the g/k sound from ก combines with the aa sound from า to make the word กา",
+        requiresSpeaking: false
+    ),
     LessonStep(
         type: .speaking,
         thai: "มา",

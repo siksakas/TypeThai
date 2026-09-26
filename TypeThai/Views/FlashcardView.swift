@@ -41,18 +41,19 @@ struct FlashcardView: View {
             
             Divider()
             
-            if showPronunciation {
-                HStack {
-                    Image(systemName: "speaker.wave.2.fill")
-                        .foregroundStyle(.orange)
-                    
-                    Text("Tap to hear pronunciation")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                    
-                    Spacer()
-                }
+            
+            HStack {
+                Image(systemName: "speaker.wave.2.fill")
+                    .foregroundStyle(.orange)
+                
+                Text("Tap to hear pronunciation")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                
+                Spacer()
             }
+            .opacity(showPronunciation ? 1 : 0)
+            
             
         }
         .padding(28)

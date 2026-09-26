@@ -1,13 +1,19 @@
 import SwiftUI
+import AVFoundation
+
 
 struct FlashcardView: View {
     
     let currword: VocabWord
     let showPronunciation: Bool
     
+    let audioPlayer = AVSpeechSynthesizer()
+    
+    
     var body: some View {
+        
         VStack(spacing: 24) {
-            
+
             // Word type
             Text(currword.type.uppercased())
                 .font(.caption)
@@ -43,12 +49,21 @@ struct FlashcardView: View {
             
             
             HStack {
-                Image(systemName: "speaker.wave.2.fill")
-                    .foregroundStyle(.orange)
-                
-                Text("Tap to hear pronunciation")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                Button {
+                    let utterance = AVSpeechUtterance(string: currword.thai)
+                    utterance.voice = AVSpeechSynthesisVoice(language: "th-TH")
+                    utterance.rate = 0.2
+                    audioPlayer.speak(utterance)
+                } label: {
+                    Image(systemName: "speaker.wave.2.fill")
+                        .foregroundStyle(.orange)
+                    
+                    Text("Tap to hear pronunciation")
+                        .font(.caption)
+                        .foregroundStyle(.black.opacity(0.6))
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.bottom,10)
                 
                 Spacer()
             }

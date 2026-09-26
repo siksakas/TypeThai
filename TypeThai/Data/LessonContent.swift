@@ -66,7 +66,7 @@ let lessonOneSteps: [LessonStep] = [
         thai: "า",
         pronunciation: "aa",
         english: "long aa vowel",
-        explanation: "This is a vowel, which makes an “aa” sound. We’ll combine it with the consonants you just learned.",
+        explanation: "This is a vowel (called sara / สระ), which makes an “aa” sound. We’ll combine it with the consonants you just learned.",
         requiresSpeaking: false
     ),
     LessonStep(

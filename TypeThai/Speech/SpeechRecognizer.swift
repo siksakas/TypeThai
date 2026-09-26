@@ -1,96 +1,128 @@
-//
-//  SpeechTranscriber.swift
-//  TypeThai
-//
-//  Created by Siksaka Suriyasat on 9/25/26.
-//
-
-import Foundation
 import Speech
 import AVFoundation
-import Combine
 
-@MainActor //actor associated with apps main ui thread, swiftui expects ui changes to happen on this main actor
-final class SpeechRecognizer: ObservableObject {
-    // class is conforming to observableobject bc it notifies swiftUI to update views that depend on it
-    // so it makes the class something SwiftUI can observe and @Published marks what properties changing causes those updates
-    @Published var transcript: String = ""
-
-    //transcriber that turns speech to text
-    private var transcriber: SpeechTranscriber?
-    //pass in a module to it and actually runs speech analysis
-    private var analyzer: SpeechAnalyzer?
-    // stream of audio chunks going into analyzer
-    private var inputSequence: AsyncStream<AnalyzerInput>?
-    // puts things into inputSequence????
-    private var inputBuilder: AsyncStream<AnalyzerInput>.Continuation?
-    //stores audio format speech analyzer expects
-    private var analyzerFormat: AVAudioFormat?
-    // live audio from mic
-    private let audioEngine = AVAudioEngine()
+final class LiveTranscriber {
     
-    func setUpTranscriber() async throws {
+    // Speech recognizer that converts audio into Thai text
+    private let recognizer = SFSpeechRecognizer(
+        locale: Locale(identifier: "th-TH")
+    )!
+    
+    // Audio engine that gets live audio from the microphone
+    private let engine = AVAudioEngine()
+    
+    // Stores the current speech recognition request
+    private var request: SFSpeechAudioBufferRecognitionRequest?
+    
+    // Stores the active speech recognition task
+    private var task: SFSpeechRecognitionTask?
 
-        let transcriber = SpeechTranscriber(
-            locale: Locale(identifier: "th-TH"), // sets it up for thai speech
-            preset: .progressiveTranscription //live transcription
-        )
+    
+    // Starts listening to the microphone
+    // onText is a function that gets called whenever new text is recognized
+    func start(onText: @escaping (String) -> Void) throws {
+        
+        #if os(iOS)
+        
+        // Get the app's shared audio session
+        let session = AVAudioSession.sharedInstance()
+        
+        // Tell the audio session that we're using it for recording
+        // .measurement reduces extra audio processing
+        try session.setCategory(.record, mode: .measurement)
+        
+        // Turn the audio session on
+        try session.setActive(true)
+        
+        #endif
 
-        self.transcriber = transcriber
-
-        analyzer = SpeechAnalyzer(
-            modules: [transcriber]
-        )
-
-        analyzerFormat =
-            await SpeechAnalyzer.bestAvailableAudioFormat(
-                compatibleWith: [transcriber]
-            )
-
-        (inputSequence, inputBuilder) =
-            AsyncStream<AnalyzerInput>.makeStream()
-
-        guard let inputSequence else {
-            return
+        
+        // Create a request that accepts live audio buffers
+        let request = SFSpeechAudioBufferRecognitionRequest()
+        
+        // Gives us text updates while the user is still speaking
+        // instead of waiting until they're completely finished
+        request.shouldReportPartialResults = true
+        
+        // Check whether this device/language supports
+        // speech recognition directly on the device
+        if recognizer.supportsOnDeviceRecognition {
+            
+            // Require recognition to happen locally instead of using a server
+            request.requiresOnDeviceRecognition = true
         }
+        
+        // Save this request in the class
+        // so we can access and stop it later
+        self.request = request
 
-        try await analyzer?.start(
-            inputSequence: inputSequence
-        )
+        
+        // Get the microphone input from the audio engine
+        let input = engine.inputNode
+        
+        // Add a "tap" to the microphone
+        // A tap lets us receive chunks of audio while the user speaks
+        input.installTap(
+            onBus: 0,
+            bufferSize: 1024,
+            format: input.outputFormat(forBus: 0)
+        ) { buffer, _ in
+            
+            // Every time we receive another chunk of microphone audio,
+            // send that audio to the speech recognition request
+            request.append(buffer)
+        }
+        
+        
+        // Prepare the audio engine to start recording
+        engine.prepare()
+        
+        // Actually begin listening to the microphone
+        try engine.start()
 
-        Task {
-            do {
-                for try await result in transcriber.results {
-
-                    let text =
-                        String(result.text.characters)
-
-                    self.transcript = text
-
-                    print("Heard:", text)
-                }
-            } catch {
-                print("Speech error:", error)
+        
+        // Start the actual speech recognition task
+        // The recognizer continuously processes the audio
+        // that we're appending to the request
+        task = recognizer.recognitionTask(
+            with: request
+        ) { [weak self] result, error in
+            
+            // If the recognizer has produced a result...
+            if let result {
+                
+                // Get its current best guess of what the user said
+                // and send that String back through onText
+                onText(
+                    result.bestTranscription.formattedString
+                )
+            }
+            
+            
+            // If something went wrong...
+            // OR the recognizer says this result is finished...
+            if error != nil || result?.isFinal == true {
+                
+                // Stop listening and clean everything up
+                self?.stop()
             }
         }
     }
+
     
-//    func transcribe(avFile: AVAudioFile) async throws -> String {
-//        let transcriber = SpeechTranscriber(locale: Locale(identifier: "th-TH"), preset:.transcription)
-//        
-//        async let transcriptionFuture = try transcriber.results.reduce("")
-//        {
-//            str, result in
-//            str + String(result.text.characters)
-//        }
-//        
-//        let analyzer = SpeechAnalyzer(modules: [transcriber])
-//        if let lastSample = try await analyzer.analyzeSequence(from: avFile) {
-//            try await analyzer.finalizeAndFinish(through: lastSample)
-//        } else {
-//            await analyzer.cancelAndFinishNow()
-//        }
-//        
-//        return try await transcriptionFuture
-//    }
+    // Stops live speech recognition
+    func stop() {
+        
+        // Stop getting microphone audio
+        engine.stop()
+        
+        // Remove the microphone tap that we installed in start()
+        engine.inputNode.removeTap(onBus: 0)
+        
+        // Tell the recognition request that no more audio is coming
+        request?.endAudio()
+        
+        // Stop the current speech recognition task
+        task?.cancel()
+    }
 }

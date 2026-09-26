@@ -12,16 +12,23 @@ struct LessonView: View {
     //thisLesson.vocabContent
     //thisLesson.steps
     @State var currentIndex = 0
+    
+    private let transcriber = LiveTranscriber()
+    // store whatever text it hears
+    @State private var transcript = ""
+    @State private var isListening = false
 
     // here we treat nil and "none" the same way
+    //its a computed property which returns an optional string bc if there is nothing in the "explanation" then it wont return anything
     private var currentExplanation: String? {
-        guard let explanation = thisLesson.steps[currentIndex].explanation,
-              explanation != "none" else { return nil }
+        guard let explanation = thisLesson.steps[currentIndex].explanation, explanation != "none"
+        else { return nil }
         return explanation
     }
 
+    //stops us from having an error for index being out of range
     private var lastIndex: Int {
-        min(thisLesson.vocabContent.count, thisLesson.steps.count) - 1
+        thisLesson.steps.count - 1
     }
 
     var body: some View {
@@ -83,6 +90,27 @@ struct LessonView: View {
             .disabled(currentIndex == 0)
 
             Button {
+                // this has to be checked BEFORE adding to the index or else it starts one step too early
+                if thisLesson.steps[currentIndex].requiresSpeaking {
+                    requestPermissions()
+                    print("pressed!")
+                    if isListening {
+                        transcriber.stop()
+                        isListening = false
+                        print("transcriber disabled")
+                    } else {
+                        do {
+                            try transcriber.start { text in
+                                transcript = text
+                            }
+                            print("transcriber enabled")
+                        } catch {
+                            print("something went wrong")
+                        }
+                        
+                        isListening = true
+                    }
+                }
                 if currentIndex < lastIndex {
                     currentIndex += 1
                 }
@@ -104,6 +132,8 @@ struct LessonView: View {
                 }
             }
             .frame(maxWidth: .infinity)
+            
+            Text(transcript)
         }
         .frame(height: 55)
         .padding(.horizontal, 24)

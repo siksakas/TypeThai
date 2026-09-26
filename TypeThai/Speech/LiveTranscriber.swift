@@ -29,7 +29,7 @@ final class LiveTranscriber {
         
         // Tell the audio session that we're using it for recording
         // .measurement reduces extra audio processing
-        try session.setCategory(.record, mode: .measurement)
+        try session.setCategory(.playAndRecord, mode: .measurement)
         
         // Turn the audio session on
         try session.setActive(true)
@@ -113,16 +113,58 @@ final class LiveTranscriber {
     // Stops live speech recognition
     func stop() {
         
-        // Stop getting microphone audio
         engine.stop()
         
-        // Remove the microphone tap that we installed in start()
         engine.inputNode.removeTap(onBus: 0)
         
-        // Tell the recognition request that no more audio is coming
         request?.endAudio()
         
-        // Stop the current speech recognition task
         task?.cancel()
+        
+        request = nil
+        task = nil
+        
+        #if os(iOS)
+        try? AVAudioSession.sharedInstance().setActive(
+            false,
+            options: .notifyOthersOnDeactivation
+        )
+        #endif
+    }
+}
+
+func requestPermissions() {
+    
+    // ask for speech recognition permission
+    SFSpeechRecognizer.requestAuthorization { status in
+        
+        switch status {
+            
+        case .authorized:
+            print("Speech recognition authorized")
+            
+        case .denied:
+            print("Speech recognition denied")
+            
+        case .restricted:
+            print("Speech recognition restricted")
+            
+        case .notDetermined:
+            print("Speech recognition not determined")
+            
+        @unknown default:
+            break
+        }
+    }
+    
+    
+    // ask for microphone permission
+    AVAudioApplication.requestRecordPermission { granted in
+        
+        if granted {
+            print("Microphone authorized")
+        } else {
+            print("Microphone denied")
+        }
     }
 }

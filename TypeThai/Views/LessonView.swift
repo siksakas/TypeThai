@@ -100,12 +100,9 @@ struct LessonView: View {
             .disabled(currentIndex == 0)
 
             Button {
-                print("current index")
-                print(currentIndex)
-                print("max")
-                print(lastIndex)
                 // this has to be checked BEFORE adding to the index or else it starts one step too early
                 if thisLesson.steps[currentIndex].requiresSpeaking {
+                    let thisIndex = currentIndex
 //                    print("pressed!")
                     if isListening {
                         transcriber.stop()
@@ -117,9 +114,12 @@ struct LessonView: View {
                         do {
                             try transcriber.start { text in
                                 transcript = text
+                                // need some way to reset it to blank automatically or only display latest word in transcript?
                                 if (transcript == thisLesson.vocabContent[currentIndex].thai) {
                                     print("transcript matched")
-                                    currentIndex+=1
+                                    // sometimes this will fire off multiple times so if we increment currentIndex itself it can lead to a
+                                    // out of bounds error but thisIndex+1 being set multiple times will not crash bc its always the same value
+                                    currentIndex = thisIndex + 1
                                 }
                             }
                             print("transcriber enabled")

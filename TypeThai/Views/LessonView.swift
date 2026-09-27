@@ -27,6 +27,11 @@ struct LessonView: View {
     private var lastIndex: Int {
         thisLesson.steps.count - 1
     }
+    
+    var leftButtonHidden: Bool {
+        if isListening { return true }
+        return currentIndex == 0
+    }
 
     var body: some View {
         VStack(spacing: 20) {
@@ -59,19 +64,21 @@ struct LessonView: View {
 
             navigationButtons
 
-            HStack{
-                Text("transcript text here")
+            if (thisLesson.steps[currentIndex].requiresSpeaking){
+                HStack{
+                    Text(transcript)
+                }
             }
             Spacer() // keeps everything anchored to the top
         }
         .animation(.easeInOut(duration: 0.25), value: currentIndex)
         .task {
-                await requestPermissions()
+                requestPermissions()
         }
     }
 
     private var navigationButtons: some View {
-        HStack(spacing: currentIndex == 0 ? 0 : 12) {
+        HStack(spacing: leftButtonHidden ? 0 : 12) {
             Button {
                 if currentIndex > 0 {
                     currentIndex -= 1
@@ -88,32 +95,39 @@ struct LessonView: View {
                     RoundedRectangle(cornerRadius: 16).fill(Color.orange)
                 }
             }
-            .frame(maxWidth: currentIndex == 0 ? 0 : .infinity)
-            .opacity(currentIndex == 0 ? 0 : 1)
+            .frame(maxWidth: leftButtonHidden ? 0 : .infinity)
+            .opacity(leftButtonHidden ? 0 : 1)
             .disabled(currentIndex == 0)
 
             Button {
+                print("current index")
+                print(currentIndex)
+                print("max")
+                print(lastIndex)
                 // this has to be checked BEFORE adding to the index or else it starts one step too early
                 if thisLesson.steps[currentIndex].requiresSpeaking {
-                    
-                    print("pressed!")
+//                    print("pressed!")
                     if isListening {
                         transcriber.stop()
                         isListening = false
                         print("transcriber disabled")
                     } else {
+                        isListening = true
+                        transcript = ""
                         do {
                             try transcriber.start { text in
                                 transcript = text
-                                isListening = true
+                                if (transcript == thisLesson.vocabContent[currentIndex].thai) {
+                                    print("transcript matched")
+                                    currentIndex+=1
+                                }
                             }
                             print("transcriber enabled")
                         } catch {
                             print("something went wrong")
                         }
                     }
-                }
-                if currentIndex < lastIndex {
+                } else if currentIndex < lastIndex {
                     currentIndex += 1
                 }
             } label: {

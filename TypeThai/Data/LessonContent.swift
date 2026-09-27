@@ -41,6 +41,12 @@ let lessonOneWords: [VocabWord] = [
         pronunciation: "maa",
         english: "come",
         type: "Word"
+    ),
+    VocabWord(
+        thai: "มา",
+        pronunciation: "maa",
+        english: "come",
+        type: "Word"
     )
 ]
 
@@ -92,5 +98,13 @@ let lessonOneSteps: [LessonStep] = [
         english: nil,
         explanation: "Now what do you think this sounds like?",
         requiresSpeaking: true
+    ),
+    LessonStep(
+        type: .speaking,
+        thai: "มา",
+        pronunciation: nil,
+        english: nil,
+        explanation: "Good job!",
+        requiresSpeaking: false
     )
 ]

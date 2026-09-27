@@ -400,6 +400,8 @@
 				DEVELOPMENT_TEAM = 759YQ3AVRA;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "TypeThai uses the microphone to check your Thai pronunciation.";
+				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "TypeThai uses speech recognition to check your Thai pronunciation.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -432,6 +434,8 @@
 				DEVELOPMENT_TEAM = 759YQ3AVRA;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "TypeThai uses the microphone to check your Thai pronunciation.";
+				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "TypeThai uses speech recognition to check your Thai pronunciation.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

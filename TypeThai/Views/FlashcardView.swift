@@ -50,6 +50,11 @@ struct FlashcardView: View {
             
             HStack {
                 Button {
+                    // allows sound to play despite silent mode on phone
+                    let session = AVAudioSession.sharedInstance()
+                    try? session.setCategory(.playback, mode: .spokenAudio, options: [.duckOthers])
+                    try? session.setActive(true)
+                    
                     let utterance = AVSpeechUtterance(string: currword.thai)
                     utterance.voice = AVSpeechSynthesisVoice(language: "th-TH")
                     utterance.rate = 0.2

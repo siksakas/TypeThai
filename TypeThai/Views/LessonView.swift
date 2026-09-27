@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct LessonView: View {
+    @Environment(\.dismiss) private var dismiss
+    
     var thisLesson: Lesson
     @State var currentIndex = 0
     @State private var transcriber = LiveTranscriber()
@@ -100,6 +102,10 @@ struct LessonView: View {
             .disabled(currentIndex == 0)
 
             Button {
+                //exits current lesson
+                if currentIndex == lastIndex {
+                    dismiss()
+                }
                 // this has to be checked BEFORE adding to the index or else it starts one step too early
                 if thisLesson.steps[currentIndex].requiresSpeaking {
                     let thisIndex = currentIndex
@@ -132,7 +138,9 @@ struct LessonView: View {
                 }
             } label: {
                 HStack {
-                    if thisLesson.steps[currentIndex].requiresSpeaking {
+                    if currentIndex == lastIndex {
+                        Image(systemName: "return")
+                    } else if thisLesson.steps[currentIndex].requiresSpeaking {
                         Image(systemName: "microphone.fill")
                     } else {
                         Text("Next").fontWeight(.semibold)

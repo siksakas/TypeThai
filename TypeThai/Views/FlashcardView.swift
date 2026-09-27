@@ -57,7 +57,7 @@ struct FlashcardView: View {
                     
                     let utterance = AVSpeechUtterance(string: currword.thai)
                     utterance.voice = AVSpeechSynthesisVoice(language: "th-TH")
-                    utterance.rate = 0.2
+                    utterance.rate = 0.3
                     audioPlayer.speak(utterance)
                 } label: {
                     Image(systemName: "speaker.wave.2.fill")

@@ -12,15 +12,12 @@ struct Lesson: Identifiable {
     let desc: String
     let vocabContent: [VocabWord]
     let steps: [LessonStep]
-    var isComplete: Bool
 }
 
 struct LessonStep: Identifiable {
     let id = UUID()
     let type: LessonStepType // if is speaking require the user to speak into the game first
     let thai: String //sfspeechanalyzer matches text to this?
-    let pronunciation: String?
-    let english: String?
     let explanation: String?
     let requiresSpeaking: Bool
 }

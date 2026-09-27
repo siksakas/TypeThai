@@ -6,8 +6,11 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct LessonView: View {
+    @Query var lessonProgress: [LessonProgress]
+    @Environment(\.modelContext) var modelContext
     @Environment(\.dismiss) private var dismiss
     
     var thisLesson: Lesson
@@ -53,7 +56,7 @@ struct LessonView: View {
                                 .fill(Color.orange)
                         }
                         .padding(.horizontal, 24)
-                        .id(currentIndex) // new view per step → re-triggers the slide
+                        .id(currentIndex)
                         .transition(
                             .asymmetric(
                                 insertion: .move(edge: .leading).combined(with: .opacity),
@@ -104,6 +107,17 @@ struct LessonView: View {
             Button {
                 //exits current lesson
                 if currentIndex == lastIndex {
+                    // tries to find an instance in which the lessonID matches this current lessons
+                    let updateProgress = lessonProgress.filter { $0.lessonID == thisLesson.name }.first
+                    // if it cannot find one it moves to the else condition which creates one.
+                    if let updateProgress {
+                        updateProgress.isComplete = true
+                        print("\(thisLesson.name) is now updated")
+                    } else {
+                        modelContext.insert(LessonProgress(lessonID: thisLesson.name, isComplete: true))
+                        print("model created")
+                    }
+                    print("view dismissed")
                     dismiss()
                 }
                 // this has to be checked BEFORE adding to the index or else it starts one step too early
@@ -121,8 +135,10 @@ struct LessonView: View {
                             try transcriber.start { text in
                                 transcript = text
                                 // need some way to reset it to blank automatically or only display latest word in transcript?
-                                if (transcript == thisLesson.vocabContent[currentIndex].thai) {
+                                if (transcript.contains(thisLesson.vocabContent[currentIndex].thai)) {
                                     print("transcript matched")
+                                    isListening = false
+                                    transcriber.stop()
                                     // sometimes this will fire off multiple times so if we increment currentIndex itself it can lead to a
                                     // out of bounds error but thisIndex+1 being set multiple times will not crash bc its always the same value
                                     currentIndex = thisIndex + 1
@@ -187,4 +203,5 @@ private extension View {
 
 #Preview {
     LessonView(thisLesson: lessons[0])
+        .modelContainer(for: LessonProgress.self, inMemory: true)
 }

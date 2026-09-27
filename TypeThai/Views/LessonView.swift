@@ -38,7 +38,7 @@ struct LessonView: View {
     var body: some View {
         VStack(spacing: 20) {
             FlashcardView(currword: thisLesson.vocabContent[currentIndex],showPronunciation:!thisLesson.steps[currentIndex].requiresSpeaking)
-                .padding(.top, 84)
+                .padding(.top,32)
 
             ZStack {
                 if let explanation = currentExplanation {

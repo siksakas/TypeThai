@@ -37,7 +37,7 @@ final class LiveTranscriber {
         
         // Tell the audio session that we're using it for recording
         // .measurement reduces extra audio processing
-        try session.setCategory(.playAndRecord, mode: .measurement)
+        try session.setCategory(.playAndRecord, mode: .measurement,options: [.defaultToSpeaker])
         
         // Turn the audio session on
         try session.setActive(true)

@@ -16,32 +16,34 @@ struct FlashcardView: View {
 
             // Word type
             Text(currword.type.uppercased())
-                .font(.caption)
+                .font(.system(size: 12, weight: .semibold,design:.rounded))
                 .fontWeight(.semibold)
-                .foregroundStyle(.orange)
+                .foregroundStyle(Color.ink)
                 .padding(.horizontal, 14)
                 .padding(.vertical, 7)
                 .background {
                     Capsule()
-                        .fill(.orange.opacity(0.12))
+                        .fill(.bgTextbox.opacity(0.1))
                 }
             
             Spacer()
             
             // Thai word
             Text(currword.thai)
-                .font(.system(size: 72, weight: .bold))
-                .foregroundStyle(.primary)
+                .font(.system(size: 72, weight: .bold,design: .rounded))
+                .foregroundStyle(Color.ink)
             
             // Pronunciation
             Text(currword.pronunciation)
                 .font(.title3)
-                .foregroundStyle(.secondary)
+            // make this one a lighter clr later
+                .foregroundStyle(Color.ink)
             
             // English meaning
             Text(currword.english)
                 .font(.title2)
                 .fontWeight(.medium)
+                .foregroundStyle(Color.ink)
             
             Spacer()
             
@@ -61,7 +63,7 @@ struct FlashcardView: View {
                     audioPlayer.speak(utterance)
                 } label: {
                     Image(systemName: "speaker.wave.2.fill")
-                        .foregroundStyle(.orange)
+                        .foregroundStyle(.bgTextbox)
                     
                     Text("Tap to hear pronunciation")
                         .font(.caption)
@@ -80,13 +82,18 @@ struct FlashcardView: View {
         .frame(width: 350, height: 400)
         .background {
             RoundedRectangle(cornerRadius: 28)
-                .fill(.background)
+                .fill(.offWhite)
                 .shadow(
                     color: .black.opacity(0.08),
                     radius: 15,
                     x: 0,
                     y: 8
                 )
+        }
+        .background {
+            RoundedRectangle(cornerRadius: 28)
+                .fill(.offWhiteShadow)
+                .offset(y: 7)
         }
         .overlay {
             RoundedRectangle(cornerRadius: 28)

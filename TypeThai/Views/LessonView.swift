@@ -19,6 +19,8 @@ struct LessonView: View {
     // store whatever text it hears
     @State private var transcript = ""
     @State private var isListening = false
+    
+    @State private var isComplete: Bool = false
 
     // here we treat nil and "none" the same way
     //its a computed property which returns an optional string bc if there is nothing in the "explanation" then it wont return anything
@@ -40,8 +42,10 @@ struct LessonView: View {
 
     var body: some View {
         VStack(spacing: 20) {
+            PageDots(count:lastIndex, currentPage: currentIndex)
+            
             FlashcardView(currword: thisLesson.vocabContent[currentIndex],showPronunciation:!thisLesson.steps[currentIndex].requiresSpeaking)
-                .padding(.top,32)
+                .padding(.top,16)
 
             ZStack {
                 if let explanation = currentExplanation {
@@ -53,7 +57,7 @@ struct LessonView: View {
                         .frame(maxWidth: .infinity)
                         .background {
                             RoundedRectangle(cornerRadius: 10)
-                                .fill(Color.orange)
+                                .fill(Color.bgTextbox)
                         }
                         .padding(.horizontal, 24)
                         .id(currentIndex)
@@ -76,7 +80,25 @@ struct LessonView: View {
             }
             Spacer() // keeps everything anchored to the top
         }
+        .background(Color.bg)
+        .navigationBarBackButtonHidden(true)
         .animation(.easeInOut(duration: 0.25), value: currentIndex)
+        .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
+                Button {
+                    dismiss()
+                } label: {
+                    Image(systemName: "arrowshape.turn.up.backward.fill")
+                        .font(.system(size: 16, weight: .bold))
+                        .foregroundStyle(.white)
+                        .frame(width: 40, height: 40)
+                        .background(Circle().fill(Color.yellow))
+                        .background(Circle().fill(Color.orange).offset(y: 2))
+                }
+                .buttonStyle(.plain)
+            }
+            .sharedBackgroundVisibility(.hidden)
+        }
         .task {
                 requestPermissions()
         }
@@ -85,6 +107,8 @@ struct LessonView: View {
     private var navigationButtons: some View {
         HStack(spacing: leftButtonHidden ? 0 : 12) {
             Button {
+                isComplete.toggle()
+                transcript = ""
                 if currentIndex > 0 {
                     currentIndex -= 1
                 }
@@ -95,16 +119,18 @@ struct LessonView: View {
                 }
                 .foregroundStyle(.white)
                 .frame(maxWidth: .infinity)
-                .padding(.vertical, 16)
                 .background {
-                    RoundedRectangle(cornerRadius: 16).fill(Color.orange)
+                    RoundedRectangle(cornerRadius: 16).fill(Color.customYellow)
                 }
             }
+            .buttonStyle(ChunkyButtonStyle())
             .frame(maxWidth: leftButtonHidden ? 0 : .infinity)
             .opacity(leftButtonHidden ? 0 : 1)
             .disabled(currentIndex == 0)
+            .sensoryFeedback(.impact(weight: .light), trigger: isComplete)
 
             Button {
+                isComplete.toggle()
                 //exits current lesson
                 if currentIndex == lastIndex {
                     // tries to find an instance in which the lessonID matches this current lessons
@@ -146,6 +172,7 @@ struct LessonView: View {
                             }
                             print("transcriber enabled")
                         } catch {
+                            transcript = "Please enable the microphone!"
                             print("something went wrong")
                         }
                     }
@@ -166,19 +193,42 @@ struct LessonView: View {
                 }
                 .foregroundStyle(.white)
                 .frame(maxWidth: .infinity)
-                .padding(.vertical, 16)
                 .background {
-                    RoundedRectangle(cornerRadius: 16).fill(Color.orange)
+                    RoundedRectangle(cornerRadius: 16).fill(Color.customYellow)
                 }
             }
             .frame(maxWidth: .infinity)
-            
+            .buttonStyle(ChunkyButtonStyle())
+            .sensoryFeedback(.impact(weight: currentIndex == lastIndex ? .heavy : .light), trigger: isComplete)
+//            .sensoryFeedback(.success, trigger: isComplete)
             
         }
         .frame(height: 55)
         .padding(.horizontal, 24)
         .groupedGeometryIfAvailable() // animate the whole row as one unit
         
+    }
+    
+    struct PageDots: View {
+        let count: Int
+        let currentPage: Int
+        
+        var body: some View {
+            HStack (spacing: 20) {
+                ForEach(0...count, id: \.self) { i in
+                    Circle()
+                        .foregroundStyle(i == currentPage ? .customYellow : .bgTextbox)
+                        .frame(width: 12, height: 12)
+                    
+//                        .background(
+//                            Circle()
+//                                .frame(width: 12, height: 12)
+//                                .offset(y: 1)
+//                        )
+//                        .foregroundColor(i == currentPage)
+                }
+            }
+        }
     }
 }
 

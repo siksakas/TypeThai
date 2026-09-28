@@ -45,7 +45,7 @@ struct LessonView: View {
         VStack(spacing: 20) {
             PageDots(count:lastIndex, currentPage: currentIndex)
             
-            FlashcardView(currword: thisLesson.vocabContent[currentIndex],showPronunciation:!thisLesson.steps[currentIndex].requiresSpeaking)
+            FlashcardView(currword: thisLesson.steps[currentIndex].word,showPronunciation:!thisLesson.steps[currentIndex].requiresSpeaking)
                 .padding(.top,16)
 
             ZStack {
@@ -163,7 +163,7 @@ struct LessonView: View {
                             try transcriber.start { text in
                                 transcript = text
                                 // need some way to reset it to blank automatically or only display latest word in transcript?
-                                if (transcript.contains(thisLesson.vocabContent[currentIndex].thai)) {
+                                if (transcript.contains(thisLesson.steps[currentIndex].word.thai)) {
                                     print("transcript matched")
                                     isListening = false
                                     transcriber.stop()

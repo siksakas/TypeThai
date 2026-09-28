@@ -10,7 +10,6 @@ struct Lesson: Identifiable {
     var id = UUID()
     let name: String
     let desc: String
-    let vocabContent: [VocabWord]
     let steps: [LessonStep]
 }
 
@@ -20,6 +19,7 @@ struct LessonStep: Identifiable {
     let thai: String //sfspeechanalyzer matches text to this?
     let explanation: String?
     let requiresSpeaking: Bool
+    let word: VocabWord
 }
 
 enum LessonStepType {

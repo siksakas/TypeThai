@@ -1,8 +1,11 @@
 import SwiftUI
+import SwiftData
 import AVFoundation
 
 
 struct FlashcardView: View {
+    @Query var decks: [Deck]
+    @Environment(\.modelContext) var modelContext
     
     let currword: VocabWord
     let showPronunciation: Bool
@@ -15,17 +18,32 @@ struct FlashcardView: View {
         VStack(spacing: 24) {
 
             // Word type
-            Text(currword.type.uppercased())
-                .font(.system(size: 12, weight: .semibold,design:.rounded))
-                .fontWeight(.semibold)
-                .foregroundStyle(Color.ink)
-                .padding(.horizontal, 14)
-                .padding(.vertical, 7)
-                .background {
-                    Capsule()
-                        .fill(.bgTextbox.opacity(0.1))
+            ZStack {
+                Text(currword.type.uppercased())
+                    .font(.system(size: 12, weight: .semibold,design:.rounded))
+                    .fontWeight(.semibold)
+                    .foregroundStyle(Color.ink)
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 7)
+                    .background {
+                        Capsule()
+                            .fill(.bgTextbox.opacity(0.1))
+                    }
+                
+                HStack() {
+                    Spacer()
+                    Menu {
+                        DeckMenu(decks: decks,currword: currword)
+                    } label: {
+                        Image(systemName:"ellipsis")
+                            .font(.headline)
+                            .foregroundStyle(Color.ink)
+                    }
+//                    .padding(.trailing,20)
                 }
-            
+                .frame(maxWidth: .infinity)
+            }
+
             Spacer()
             
             // Thai word
@@ -102,11 +120,44 @@ struct FlashcardView: View {
     }
 }
 
+struct DeckMenu: View {
+    var decks: [Deck] // allows us to use the model from
+    let currword: VocabWord
+    @Environment(\.modelContext) var modelContext
+    
+    var body: some View {
+        ForEach(decks,id: \.self) { deck in
+            Button {
+                let word = currword
+                if !deck.words.contains(where: { $0.id == currword.id }) {
+                    deck.words.append(word)
+                    print("word added to deck")
+                }
+            } label: {
+                Text(deck.deckName)
+                if deck.words.contains(where: { $0.id == currword.id }) {
+                    Image(systemName: "checkmark.circle.fill")
+                }
+            }
+            .background(
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(Color(Color.offWhite))
+            )
+        }
+        Button {
+            modelContext.insert(Deck(deckName: "New Deck", words: []))
+        } label: {
+            Text("Create Deck")
+        }
+    }
+}
+
 #Preview {
     ZStack {
         Color(.systemGroupedBackground)
             .ignoresSafeArea()
         
         FlashcardView(currword: exampleWord,showPronunciation: true)
+            .modelContainer(for: Deck.self, inMemory: true)
     }
 }

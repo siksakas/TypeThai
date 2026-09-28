@@ -14,57 +14,69 @@ struct OverviewView: View {
     }
     
     var body: some View {
-        NavigationStack {
-            ScrollView {
-                Logo()
-                    .padding(.top,10)
-                VStack(spacing: 20) {
-                    ForEach(lessons) { lesson in
-                        NavigationLink {
-                            LessonView(thisLesson: lesson)
-                        } label: {
-                            HStack {
-                                Text(lesson.name)
-                                    .font(.system(size: 18, weight: .bold, design: .rounded))
+        TabView {
+            Tab {
+                NavigationStack {
+                    ScrollView {
+                        Logo()
+                            .padding(.top,10)
+                        VStack(spacing: 20) {
+                            ForEach(lessons) { lesson in
+                                NavigationLink {
+                                    LessonView(thisLesson: lesson)
+                                        .toolbar(.hidden,for: .tabBar)
+                                } label: {
+                                    HStack {
+                                        Text(lesson.name)
+                                            .font(.system(size: 18, weight: .bold, design: .rounded))
 
-                                Spacer()
+                                        Spacer()
 
-                                if isComplete(lesson) {
-                                    Image(systemName: "checkmark.circle.fill")
-                                        .foregroundStyle(.green)
+                                        if isComplete(lesson) {
+                                            Image(systemName: "checkmark.circle.fill")
+                                                .foregroundStyle(.green)
+                                        }
+
+                                        Image(systemName: "chevron.right")
+                                            .font(.system(size: 14, weight: .bold))
+                                            .foregroundStyle(.secondary)
+                                    }
+                                    .foregroundStyle(.black)
+                                    .padding(.horizontal, 20)
+                                    .padding(.vertical, 18)
+                                    .background(
+                                        RoundedRectangle(cornerRadius: 20)
+                                            .fill(Color(white: 0.98))
+                                    )
+                                    .background(
+                                        RoundedRectangle(cornerRadius: 20)
+                                            .fill(Color(white: 0.85))
+                                            .offset(y: 5)
+                                    )
                                 }
-
-                                Image(systemName: "chevron.right")
-                                    .font(.system(size: 14, weight: .bold))
-                                    .foregroundStyle(.secondary)
+                                .buttonStyle(.plain)
+                                .simultaneousGesture(
+                                    TapGesture().onEnded {
+                                        lessonTap += 1
+                                    }
+                                )
+                                .sensoryFeedback(.impact(weight: .light), trigger: lessonTap)
                             }
-                            .foregroundStyle(.black)
-                            .padding(.horizontal, 20)
-                            .padding(.vertical, 18)
-                            .background(
-                                RoundedRectangle(cornerRadius: 20)
-                                    .fill(Color(white: 0.98))
-                            )
-                            .background(
-                                RoundedRectangle(cornerRadius: 20)
-                                    .fill(Color(white: 0.85))
-                                    .offset(y: 5)
-                            )
                         }
-                        .buttonStyle(.plain)
-                        .simultaneousGesture(
-                            TapGesture().onEnded {
-                                lessonTap += 1
-                            }
-                        )
-                        .sensoryFeedback(.impact(weight: .light), trigger: lessonTap)
+                        .padding(.horizontal, 20)
+                        .padding(.top, 20)
                     }
+                    .background(Color.bg)
                 }
-                .padding(.horizontal, 20)
-                .padding(.top, 20)
             }
-            .background(Color.bg)
+            label: {
+                Image(systemName:"house.fill")
+                Text("Home")
+            }
+            
         }
+//        .tabViewStyle()
+        
     }
     
     struct Logo: View {

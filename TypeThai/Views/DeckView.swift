@@ -16,7 +16,7 @@ struct DeckView: View {
             ScrollView {
                 ForEach(decks) { deck in
                     NavigationLink {
-                        EmptyView()
+                        DeckReviewView(deck: deck)
                     } label: {
                         HStack {
                             Text(deck.name)
@@ -54,6 +54,9 @@ struct DeckView: View {
                     }
                 }
             }
+//            .task {
+//                modelContext.insert(Deck(name:"Hard Vocab",words: []))
+//            }
             .frame(maxWidth: .infinity)
             .border(.black,width:1)
             .background(Color.bg)

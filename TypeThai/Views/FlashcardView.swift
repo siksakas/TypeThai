@@ -134,6 +134,9 @@ struct DeckMenu: View {
                         deck.words.append(word)
                         print("deck words:")
                         print(deck.words)
+                    } else {
+                        //implement this later bc i dont feel like doing ts rn
+//                        deck.words.remove(at: deck.words.firstIndex(of: word))
                     }
                 } label: {
                     Text(deck.name)

@@ -3,6 +3,8 @@ import SwiftData
 
 struct OverviewView: View {
     @Query var lessonProgress: [LessonProgress]
+    @State private var lessonTap: Int = 0
+    
     func isComplete(_ lesson: Lesson) -> Bool {
         if (lessonProgress.contains { $0.lessonID == lesson.name && $0.isComplete }) {
             print("marked complete!")
@@ -50,6 +52,12 @@ struct OverviewView: View {
                             )
                         }
                         .buttonStyle(.plain)
+                        .simultaneousGesture(
+                            TapGesture().onEnded {
+                                lessonTap += 1
+                            }
+                        )
+                        .sensoryFeedback(.impact(weight: .light), trigger: lessonTap)
                     }
                 }
                 .padding(.horizontal, 20)

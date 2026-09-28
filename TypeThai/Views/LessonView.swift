@@ -19,6 +19,8 @@ struct LessonView: View {
     // store whatever text it hears
     @State private var transcript = ""
     @State private var isListening = false
+    
+    @State private var isComplete: Bool = false
 
     // here we treat nil and "none" the same way
     //its a computed property which returns an optional string bc if there is nothing in the "explanation" then it wont return anything
@@ -105,6 +107,7 @@ struct LessonView: View {
     private var navigationButtons: some View {
         HStack(spacing: leftButtonHidden ? 0 : 12) {
             Button {
+                isComplete.toggle()
                 transcript = ""
                 if currentIndex > 0 {
                     currentIndex -= 1
@@ -124,8 +127,10 @@ struct LessonView: View {
             .frame(maxWidth: leftButtonHidden ? 0 : .infinity)
             .opacity(leftButtonHidden ? 0 : 1)
             .disabled(currentIndex == 0)
+            .sensoryFeedback(.impact(weight: .light), trigger: isComplete)
 
             Button {
+                isComplete.toggle()
                 //exits current lesson
                 if currentIndex == lastIndex {
                     // tries to find an instance in which the lessonID matches this current lessons
@@ -194,8 +199,8 @@ struct LessonView: View {
             }
             .frame(maxWidth: .infinity)
             .buttonStyle(ChunkyButtonStyle())
-            
-            
+            .sensoryFeedback(.impact(weight: currentIndex == lastIndex ? .heavy : .light), trigger: isComplete)
+//            .sensoryFeedback(.success, trigger: isComplete)
             
         }
         .frame(height: 55)

@@ -80,7 +80,7 @@ struct FlashcardView: View {
         .frame(width: 350, height: 400)
         .background {
             RoundedRectangle(cornerRadius: 28)
-                .fill(.background)
+                .fill(.offWhite)
                 .shadow(
                     color: .black.opacity(0.08),
                     radius: 15,

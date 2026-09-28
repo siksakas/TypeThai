@@ -53,7 +53,7 @@ struct LessonView: View {
                         .frame(maxWidth: .infinity)
                         .background {
                             RoundedRectangle(cornerRadius: 10)
-                                .fill(Color.orange)
+                                .fill(Color.bgTextbox)
                         }
                         .padding(.horizontal, 24)
                         .id(currentIndex)
@@ -76,6 +76,7 @@ struct LessonView: View {
             }
             Spacer() // keeps everything anchored to the top
         }
+        .background(Color.bg)
         .animation(.easeInOut(duration: 0.25), value: currentIndex)
         .task {
                 requestPermissions()
@@ -95,11 +96,11 @@ struct LessonView: View {
                 }
                 .foregroundStyle(.white)
                 .frame(maxWidth: .infinity)
-                .padding(.vertical, 16)
                 .background {
-                    RoundedRectangle(cornerRadius: 16).fill(Color.orange)
+                    RoundedRectangle(cornerRadius: 16).fill(Color.customYellow)
                 }
             }
+            .buttonStyle(ChunkyButtonStyle())
             .frame(maxWidth: leftButtonHidden ? 0 : .infinity)
             .opacity(leftButtonHidden ? 0 : 1)
             .disabled(currentIndex == 0)
@@ -166,12 +167,13 @@ struct LessonView: View {
                 }
                 .foregroundStyle(.white)
                 .frame(maxWidth: .infinity)
-                .padding(.vertical, 16)
                 .background {
-                    RoundedRectangle(cornerRadius: 16).fill(Color.orange)
+                    RoundedRectangle(cornerRadius: 16).fill(Color.customYellow)
                 }
             }
             .frame(maxWidth: .infinity)
+            .buttonStyle(ChunkyButtonStyle())
+            
             
             
         }

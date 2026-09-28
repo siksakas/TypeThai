@@ -9,11 +9,11 @@ import SwiftData
 
 @Model
 final class Deck {
-    var deckName: String
+    var name: String
     var words: [VocabWord]
     
-    init(deckName: String, words: [VocabWord]) {
-        self.deckName = deckName
+    init(name: String, words: [VocabWord]) {
+        self.name = name
         self.words = words
     }
 }

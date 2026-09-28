@@ -126,28 +126,31 @@ struct DeckMenu: View {
     @Environment(\.modelContext) var modelContext
     
     var body: some View {
-        ForEach(decks,id: \.self) { deck in
-            Button {
-                let word = currword
-                if !deck.words.contains(where: { $0.id == currword.id }) {
-                    deck.words.append(word)
-                    print("word added to deck")
-                }
-            } label: {
-                Text(deck.deckName)
-                if deck.words.contains(where: { $0.id == currword.id }) {
-                    Image(systemName: "checkmark.circle.fill")
+        Section {
+            ForEach(decks,id: \.self) { deck in
+                Button {
+                    let word = currword
+                    if !deck.words.contains(where: { $0.thai == currword.thai }) {
+                        deck.words.append(word)
+                        print("deck words:")
+                        print(deck.words)
+                    }
+                } label: {
+                    Text(deck.name)
+                    if deck.words.contains(where: { $0.thai == currword.thai }) {
+                        Image(systemName: "checkmark.circle.fill")
+                    }
                 }
             }
-            .background(
-                RoundedRectangle(cornerRadius: 8)
-                    .fill(Color(Color.offWhite))
-            )
         }
-        Button {
-            modelContext.insert(Deck(deckName: "New Deck", words: []))
-        } label: {
-            Text("Create Deck")
+        Section {
+            Button {
+                modelContext.insert(Deck(name: "New Deck", words: []))
+                print("deck created")
+                print(decks)
+            } label: {
+                Text("Create Deck")
+            }
         }
     }
 }

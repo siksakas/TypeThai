@@ -13,7 +13,7 @@ struct TypeThaiApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
-                .modelContainer(for: LessonProgress.self)
+                .modelContainer(for: [LessonProgress.self,Deck.self])
         }
     }
 }

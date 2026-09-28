@@ -3,6 +3,7 @@ import SwiftData
 
 struct OverviewView: View {
     @Query var lessonProgress: [LessonProgress]
+    
     @State private var lessonTap: Int = 0
     
     func isComplete(_ lesson: Lesson) -> Bool {
@@ -74,6 +75,12 @@ struct OverviewView: View {
                 Text("Home")
             }
             
+            Tab {
+               DeckView()
+            } label: {
+                
+            }
+            
         }
 //        .tabViewStyle()
         
@@ -108,4 +115,5 @@ struct OverviewView: View {
 #Preview {
     OverviewView()
         .modelContainer(for: LessonProgress.self, inMemory: true)
+        .modelContainer(for: Deck.self, inMemory: true)
 }

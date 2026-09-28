@@ -12,6 +12,7 @@ struct LessonView: View {
     @Query var lessonProgress: [LessonProgress]
     @Environment(\.modelContext) var modelContext
     @Environment(\.dismiss) private var dismiss
+    @State var completedSpeaking: Bool = false
     
     var thisLesson: Lesson
     @State var currentIndex = 0
@@ -128,6 +129,7 @@ struct LessonView: View {
             .opacity(leftButtonHidden ? 0 : 1)
             .disabled(currentIndex == 0)
             .sensoryFeedback(.impact(weight: .light), trigger: isComplete)
+            
 
             Button {
                 isComplete.toggle()
@@ -168,6 +170,7 @@ struct LessonView: View {
                                     // sometimes this will fire off multiple times so if we increment currentIndex itself it can lead to a
                                     // out of bounds error but thisIndex+1 being set multiple times will not crash bc its always the same value
                                     currentIndex = thisIndex + 1
+                                    completedSpeaking.toggle()
                                 }
                             }
                             print("transcriber enabled")
@@ -199,6 +202,7 @@ struct LessonView: View {
             }
             .frame(maxWidth: .infinity)
             .buttonStyle(ChunkyButtonStyle())
+            .sensoryFeedback(.success, trigger: completedSpeaking)
             .sensoryFeedback(.impact(weight: currentIndex == lastIndex ? .heavy : .light), trigger: isComplete)
 //            .sensoryFeedback(.success, trigger: isComplete)
             

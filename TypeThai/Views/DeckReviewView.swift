@@ -5,10 +5,13 @@
 //  Created by Siksaka Suriyasat on 9/28/26.
 //
 import SwiftUI
+import SwiftData
 
 struct DeckReviewView: View {
-    let deck: Deck
+    @Bindable var deck: Deck
+    
     var body: some View {
+        TextField("Deck Title", text: $deck.name)
         List (deck.words) { word in
             HStack {
                 Text(word.thai)
@@ -18,6 +21,8 @@ struct DeckReviewView: View {
                 Text(word.english)
             }
         }
+        .scrollContentBackground(.hidden)
+        .background(.bg)
     }
 }
 

@@ -132,11 +132,15 @@ struct DeckMenu: View {
                     let word = currword
                     if !deck.words.contains(where: { $0.thai == currword.thai }) {
                         deck.words.append(word)
+                        print("\(currword.thai) added!")
                         print("deck words:")
                         print(deck.words)
                     } else {
-                        //implement this later bc i dont feel like doing ts rn
-//                        deck.words.remove(at: deck.words.firstIndex(of: word))
+                        // if its alr added, itll like remove instead
+                        deck.words.removeAll(where: { $0.thai == currword.thai})
+                        print("\(currword.thai) removed!")
+                        print("deck words:")
+                        print(deck.words)
                     }
                 } label: {
                     Text(deck.name)
@@ -144,16 +148,18 @@ struct DeckMenu: View {
                         Image(systemName: "checkmark.circle.fill")
                     }
                 }
+                .menuActionDismissBehavior(.disabled)
             }
         }
         Section {
             Button {
-                modelContext.insert(Deck(name: "New Deck", words: []))
+                modelContext.insert(Deck(name: "New Deck \(decks.count + 1)", words: []))
                 print("deck created")
                 print(decks)
             } label: {
                 Text("Create Deck")
             }
+            .menuActionDismissBehavior(.disabled)
         }
     }
 }

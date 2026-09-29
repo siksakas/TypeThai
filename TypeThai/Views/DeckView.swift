@@ -13,7 +13,13 @@ struct DeckView: View {
     
     var body: some View {
         NavigationStack {
-            ScrollView {
+            List {
+                
+                Header
+                    .listRowBackground(Color.clear)
+                    .listRowSeparator(.hidden)
+                    .listRowInsets(EdgeInsets())
+                
                 ForEach(decks) { deck in
                     NavigationLink {
                         DeckReviewView(deck: deck)
@@ -41,30 +47,54 @@ struct DeckView: View {
                                 .offset(y: 5)
                         )
                     }
-                    .frame(width:350)
-                    .background (
-                        RoundedRectangle(cornerRadius: 20)
-                    )
-                    .swipeActions {
-                        Button {
-                            
+                    .navigationLinkIndicatorVisibility(.hidden)
+                    .padding(.horizontal, 20)
+                    .swipeActions(edge: .trailing) {
+                        Button (role:.destructive){
+                            modelContext.delete(deck)
                         } label: {
-                            Image(systemName: "pencil")
+                            Image(systemName: "trash")
                         }
                     }
+                    .listRowInsets(EdgeInsets(top: 8, leading: 0, bottom: 12, trailing: 0))
+                    .listRowSeparator(.hidden)
+                    .listRowBackground(Color.clear)
+
                 }
             }
+            .listStyle(.plain)
+            .background(.bg)
 //            .task {
 //                modelContext.insert(Deck(name:"Hard Vocab",words: []))
 //            }
-            .frame(maxWidth: .infinity)
-            .border(.black,width:1)
-            .background(Color.bg)
+        
         }
-        .border(.black,width:1)
     }
 }
 
+private var Header: some View {
+    HStack(alignment: .top, spacing: 2) {
+        HStack {
+            Text("Practice").foregroundColor(.white)
+
+        }
+        .font(TT.rounded(30, .black))
+        ZStack {
+            Capsule().fill(Color.customMint)
+                .frame(width: 4, height: 13)
+                .rotationEffect(.degrees(25))
+                .offset(x: -2, y: -3)
+            Capsule().fill(Color.customMint)
+                .frame(width: 4, height: 13)
+                .rotationEffect(.degrees(70))
+                .offset(x: 3, y: 6)
+        }
+        .frame(width: 16, height: 24)
+    }
+    .background(.bg)
+    .frame(maxWidth: .infinity, maxHeight: .infinity)
+}
+    
 #Preview {
     DeckView()
         .modelContainer(for: Deck.self, inMemory: true)

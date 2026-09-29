@@ -78,7 +78,15 @@ struct OverviewView: View {
             Tab {
                DeckView()
             } label: {
-                
+                Image(systemName:"pencil")
+                Text("Practice")
+            }
+            
+            Tab {
+                StatsView()
+            } label: {
+                Image(systemName: "person.fill")
+                Text("Stats")
             }
             
         }

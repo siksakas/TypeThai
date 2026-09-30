@@ -91,3 +91,109 @@ let lessonOneSteps: [LessonStep] = [
         )
     )
 ]
+
+let lessonTwoSteps: [LessonStep] = [
+    LessonStep(
+        type: .explanation,
+        thai: "ด",
+        explanation: "Here’s a new consonant! Tap the speaker button and listen to its sound.",
+        requiresSpeaking: false,
+        word: VocabWord(
+            thai: "ด",
+            pronunciation: "daw",
+            english: "d sound",
+            type: "Consonant"
+        )
+    ),
+
+    LessonStep(
+        type: .character,
+        thai: "ี",
+        explanation: "none",
+        requiresSpeaking: false,
+        word: VocabWord(
+            thai: "ี",
+            pronunciation: "ee",
+            english: "long ee vowel",
+            type: "Vowel"
+        )
+    ),
+
+    LessonStep(
+        type: .explanation,
+        thai: "ี",
+        explanation: "This vowel makes a long “ee” sound, like the vowel in “see.” Unlike า, it is written above the consonant.",
+        requiresSpeaking: false,
+        word: VocabWord(
+            thai: "ี",
+            pronunciation: "ee",
+            english: "long ee vowel",
+            type: "Vowel"
+        )
+    ),
+
+    LessonStep(
+        type: .word,
+        thai: "ดี",
+        explanation: "Here ด combines with the long ee sound from ี to make ดี.",
+        requiresSpeaking: false,
+        word: VocabWord(
+            thai: "ดี",
+            pronunciation: "dee",
+            english: "good",
+            type: "Word"
+        )
+    ),
+
+    LessonStep(
+        type: .word,
+        thai: "มี",
+        explanation: "Remember ม from the last lesson? Combine it with ี and you get มี.",
+        requiresSpeaking: false,
+        word: VocabWord(
+            thai: "มี",
+            pronunciation: "mee",
+            english: "have / there is",
+            type: "Word"
+        )
+    ),
+
+    LessonStep(
+        type: .speaking,
+        thai: "มี",
+        explanation: "You’ve seen both of these symbols before. What do you think this sounds like?",
+        requiresSpeaking: true,
+        word: VocabWord(
+            thai: "มี",
+            pronunciation: "mee",
+            english: "have / there is",
+            type: "Word"
+        )
+    ),
+
+    LessonStep(
+        type: .speaking,
+        thai: "ดี",
+        explanation: "Now try this one!",
+        requiresSpeaking: true,
+        word: VocabWord(
+            thai: "ดี",
+            pronunciation: "dee",
+            english: "good",
+            type: "Word"
+        )
+    ),
+
+    LessonStep(
+        type: .speaking,
+        thai: "ดี",
+        explanation: "Good job! You can now read words using า and ี.",
+        requiresSpeaking: false,
+        word: VocabWord(
+            thai: "ดี",
+            pronunciation: "dee",
+            english: "good",
+            type: "Word"
+        )
+    )
+]

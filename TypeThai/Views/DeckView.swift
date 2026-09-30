@@ -16,6 +16,7 @@ struct DeckView: View {
             List {
                 
                 Header
+                    .padding(.top,10)
                     .listRowBackground(Color.clear)
                     .listRowSeparator(.hidden)
                     .listRowInsets(EdgeInsets())

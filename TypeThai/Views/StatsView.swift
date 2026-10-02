@@ -19,58 +19,7 @@ struct StatsView: View {
     
     
     var body: some View {
-        VStack {
-            HStack {
-                RoundedRectangle(cornerRadius: 20)
-                    .fill(.offWhite)
-                    .background(
-                        RoundedRectangle(cornerRadius: 20)
-                            .fill(.offWhiteShadow)
-                            .offset(y:7)
-                    )
-            }
-            .padding(10)
-            
-            HStack (spacing:20) {
-                ZStack {
-                    RoundedRectangle(cornerRadius: 20)
-                        .fill(Color.offWhite)
-                        .background(
-                            RoundedRectangle(cornerRadius: 20)
-                                .fill(Color.offWhiteShadow)
-                                .offset(y:8)
-                        )
-                }
-                
-                ZStack {
-                    
-                    
-                    RoundedRectangle(cornerRadius: 20)
-                        .fill(Color.offWhite)
-                        .background(
-                            RoundedRectangle(cornerRadius: 20)
-                                .fill(Color.offWhiteShadow)
-                                .offset(y:8)
-                        )
-                    VStack {
-                        Text("Lessons Finished:")
-                            .font(TT.rounded(25, .black))
-                        Text("\(completedCount)")
-                            .font(TT.rounded(30, .black))
-                    }
-                    
-                        
-                }
-            }
-            .padding(15)
-            HStack {
-                RoundedRectangle(cornerRadius: 20)
-            }
-            .padding(10)
-            
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(.bg)
+
     }
 }
 

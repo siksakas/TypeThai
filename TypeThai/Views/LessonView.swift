@@ -12,15 +12,14 @@ struct LessonView: View {
     @Query var lessonProgress: [LessonProgress]
     @Environment(\.modelContext) var modelContext
     @Environment(\.dismiss) private var dismiss
-    @State var completedSpeaking: Bool = false
-
+    
     var thisLesson: Lesson
+    
     @State var currentIndex = 0
     @State private var transcriber = LiveTranscriber()
-    // store whatever text it hears
     @State private var transcript = ""
     @State private var isListening = false
-
+    @State var completedSpeaking: Bool = false
     @State private var isComplete: Bool = false
 
     // here we treat nil and "none" the same way
@@ -31,7 +30,6 @@ struct LessonView: View {
         else { return nil }
         return explanation
     }
-
     //stops us from having an error for index being out of range
     private var lastIndex: Int {
         thisLesson.steps.count - 1
@@ -83,16 +81,13 @@ struct LessonView: View {
             }
             .frame(maxWidth: .infinity)
 
-            navigationButtons
-
+            if thisLesson.steps[currentIndex].type == .quiz {
+                answerButtons
+            } else {
+                navigationButtons
+            }
+            
             Spacer()
-
-            //            if thisLesson.steps[currentIndex].requiresSpeaking {
-            //                HStack {
-            //                    Text(transcript)
-            //                }
-            //            }
-
         }
         .background(Color.bg)
         .navigationBarBackButtonHidden(true)
@@ -105,6 +100,9 @@ struct LessonView: View {
     private var pageControl: some View {
         HStack {
             Button {
+                if isListening {
+                    stopListening()
+                }
                 dismiss()
             } label: {
                 Image(systemName: "arrowshape.turn.up.backward.fill")
@@ -112,11 +110,11 @@ struct LessonView: View {
                     .foregroundStyle(.offWhiteShadow)
                     .frame(width: 50, height: 35)
                     .background(
-                        RoundedRectangle(cornerRadius: 10)
+                        RoundedRectangle(cornerRadius: 16)
                             .fill(Color.offWhite)
                     )
                     .background(
-                        RoundedRectangle(cornerRadius: 10)
+                        RoundedRectangle(cornerRadius: 16)
                             .fill(Color.offWhiteShadow)
                             .offset(y: 3)
                     )
@@ -136,11 +134,11 @@ struct LessonView: View {
                     .foregroundStyle(.offWhiteShadow)
                     .frame(width: 50, height: 35)
                     .background(
-                        RoundedRectangle(cornerRadius: 10)
+                        RoundedRectangle(cornerRadius:16)
                             .fill(Color.offWhite)
                     )
                     .background(
-                        RoundedRectangle(cornerRadius: 10)
+                        RoundedRectangle(cornerRadius: 16)
                             .fill(Color.offWhiteShadow)
                             .offset(y: 3)
                     )
@@ -208,8 +206,7 @@ struct LessonView: View {
                     let thisIndex = currentIndex
                     //                    print("pressed!")
                     if isListening {
-                        transcriber.stop()
-                        isListening = false
+                        stopListening()
                         print("transcriber disabled")
                     } else {
                         isListening = true
@@ -222,8 +219,7 @@ struct LessonView: View {
                                     thisLesson.steps[currentIndex].word.thai
                                 ) {
                                     print("transcript matched")
-                                    isListening = false
-                                    transcriber.stop()
+                                    stopListening()
                                     // sometimes this will fire off multiple times so if we increment currentIndex itself it can lead to a
                                     // out of bounds error but thisIndex+1 being set multiple times will not crash bc its always the same value
                                     currentIndex = thisIndex + 1
@@ -275,6 +271,39 @@ struct LessonView: View {
         .padding(.horizontal, 24)
         .groupedGeometryIfAvailable()  // animate the whole row as one unit
 
+    }
+    
+    private var answerButtons: some View {
+        VStack {
+            Button {
+
+            } label: {
+                HStack {
+                    Image(systemName: "arrow.left")
+                        .foregroundStyle(.ink)
+                    Text("Back").fontWeight(.semibold)
+                        .foregroundStyle(.ink)
+                }
+                .foregroundStyle(.white)
+                .frame(maxWidth: .infinity)
+                .background {
+                    RoundedRectangle(cornerRadius: 16).fill(Color.offWhite)
+                }
+            }
+            .buttonStyle(ChunkyButtonStyle())
+            .sensoryFeedback(.impact(weight: .light), trigger: isComplete)
+        }
+        .padding(.horizontal, 24)
+    }
+    
+    private func stopListening() {
+        guard isListening else { return }
+
+        transcriber.stop()
+        isListening = false
+        transcript = ""
+
+        print("transcriber disabled")
     }
 }
 

@@ -14,7 +14,6 @@ struct DeckView: View {
     var body: some View {
         NavigationStack {
             List {
-                
                 Header
                     .padding(.top,10)
                     .listRowBackground(Color.clear)

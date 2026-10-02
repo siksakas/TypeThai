@@ -7,7 +7,7 @@ let exampleWord = VocabWord(
 
 let lessonOneSteps: [LessonStep] = [
     LessonStep(
-        type: .explanation,
+        type: .explanation, //shld be explanation
         thai: "ก",
         explanation: "Tap the speaker button to hear the character, and the Next button to move on!",
         requiresSpeaking: false,

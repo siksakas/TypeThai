@@ -27,4 +27,6 @@ enum LessonStepType {
     case explanation
     case word
     case speaking
+    case quiz
+    case quiz2
 }

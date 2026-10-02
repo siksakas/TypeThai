@@ -23,15 +23,16 @@ struct ChunkyButtonStyle: ButtonStyle {
             .foregroundStyle(Color.ink)
             .frame(maxWidth: .infinity)
             .frame(height: 64)
-            .background(Color.customYellow, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
+            .background(Color.offWhite, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
             .offset(y: pressed ? depth : 0)
             .background(
                 RoundedRectangle(cornerRadius: 20, style: .continuous)
-                    .fill(Color.customYellowDeep)
+                    .fill(Color.offWhiteShadow)
                     .offset(y: 7)
             )
             .padding(.bottom, depth)
-            .animation(.spring(response: 0.2, dampingFraction: 0.7), value: pressed)
+            .animation(.spring(response: 0.1, dampingFraction: 0.7), value: pressed)
+            .sensoryFeedback(.success, trigger: pressed)
     }
 }
 

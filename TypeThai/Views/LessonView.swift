@@ -5,28 +5,29 @@
 //  Created by Siksaka Suriyasat on 9/24/26.
 //
 
-import SwiftUI
 import SwiftData
+import SwiftUI
 
 struct LessonView: View {
     @Query var lessonProgress: [LessonProgress]
     @Environment(\.modelContext) var modelContext
     @Environment(\.dismiss) private var dismiss
     @State var completedSpeaking: Bool = false
-    
+
     var thisLesson: Lesson
     @State var currentIndex = 0
     @State private var transcriber = LiveTranscriber()
     // store whatever text it hears
     @State private var transcript = ""
     @State private var isListening = false
-    
+
     @State private var isComplete: Bool = false
 
     // here we treat nil and "none" the same way
     //its a computed property which returns an optional string bc if there is nothing in the "explanation" then it wont return anything
     private var currentExplanation: String? {
-        guard let explanation = thisLesson.steps[currentIndex].explanation, explanation != "none"
+        guard let explanation = thisLesson.steps[currentIndex].explanation,
+            explanation != "none"
         else { return nil }
         return explanation
     }
@@ -35,7 +36,7 @@ struct LessonView: View {
     private var lastIndex: Int {
         thisLesson.steps.count - 1
     }
-    
+
     var leftButtonHidden: Bool {
         if isListening { return true }
         return currentIndex == 0
@@ -43,10 +44,16 @@ struct LessonView: View {
 
     var body: some View {
         VStack(spacing: 20) {
-            PageDots(count:lastIndex, currentPage: currentIndex)
-            
-            FlashcardView(currword: thisLesson.steps[currentIndex].word,showPronunciation:!thisLesson.steps[currentIndex].requiresSpeaking)
-                .padding(.top,16)
+
+            pageControl
+                .padding(.top, 16)
+
+            FlashcardView(
+                currword: thisLesson.steps[currentIndex].word,
+                showPronunciation: !thisLesson.steps[currentIndex]
+                    .requiresSpeaking
+            )
+            .padding(.top, 16)
 
             ZStack {
                 if let explanation = currentExplanation {
@@ -64,8 +71,12 @@ struct LessonView: View {
                         .id(currentIndex)
                         .transition(
                             .asymmetric(
-                                insertion: .move(edge: .leading).combined(with: .opacity),
-                                removal: .move(edge: .trailing).combined(with: .opacity)
+                                insertion: .move(edge: .leading).combined(
+                                    with: .opacity
+                                ),
+                                removal: .move(edge: .trailing).combined(
+                                    with: .opacity
+                                )
                             )
                         )
                 }
@@ -74,35 +85,71 @@ struct LessonView: View {
 
             navigationButtons
 
-            if (thisLesson.steps[currentIndex].requiresSpeaking){
-                HStack{
-                    Text(transcript)
-                }
-            }
-            Spacer() // keeps everything anchored to the top
+            Spacer()
+
+            //            if thisLesson.steps[currentIndex].requiresSpeaking {
+            //                HStack {
+            //                    Text(transcript)
+            //                }
+            //            }
+
         }
         .background(Color.bg)
         .navigationBarBackButtonHidden(true)
         .animation(.easeInOut(duration: 0.25), value: currentIndex)
-        .toolbar {
-            ToolbarItem(placement: .topBarLeading) {
-                Button {
-                    dismiss()
-                } label: {
-                    Image(systemName: "arrowshape.turn.up.backward.fill")
-                        .font(.system(size: 16, weight: .bold))
-                        .foregroundStyle(.white)
-                        .frame(width: 40, height: 40)
-                        .background(Circle().fill(Color.yellow))
-                        .background(Circle().fill(Color.orange).offset(y: 2))
-                }
-                .buttonStyle(.plain)
-            }
-            .sharedBackgroundVisibility(.hidden)
-        }
         .task {
-                requestPermissions()
+            requestPermissions()
         }
+    }
+
+    private var pageControl: some View {
+        HStack {
+            Button {
+                dismiss()
+            } label: {
+                Image(systemName: "arrowshape.turn.up.backward.fill")
+                    .font(.system(size: 16, weight: .bold))
+                    .foregroundStyle(.offWhiteShadow)
+                    .frame(width: 50, height: 35)
+                    .background(
+                        RoundedRectangle(cornerRadius: 10)
+                            .fill(Color.offWhite)
+                    )
+                    .background(
+                        RoundedRectangle(cornerRadius: 10)
+                            .fill(Color.offWhiteShadow)
+                            .offset(y: 3)
+                    )
+            }
+            .buttonStyle(.plain)
+            .padding(.leading, 24)
+            .padding(.trailing,12)
+
+            ProgressView(value: Double(currentIndex), total: Double(lastIndex))
+                .tint(.offWhite)
+
+            Button {
+
+            } label: {
+                Image(systemName: "gearshape.fill")
+                    .font(.system(size: 16, weight: .bold))
+                    .foregroundStyle(.offWhiteShadow)
+                    .frame(width: 50, height: 35)
+                    .background(
+                        RoundedRectangle(cornerRadius: 10)
+                            .fill(Color.offWhite)
+                    )
+                    .background(
+                        RoundedRectangle(cornerRadius: 10)
+                            .fill(Color.offWhiteShadow)
+                            .offset(y: 3)
+                    )
+            }
+            .buttonStyle(.plain)
+            .padding(.trailing, 24)
+            .padding(.leading,12)
+        }
+
     }
 
     private var navigationButtons: some View {
@@ -116,12 +163,14 @@ struct LessonView: View {
             } label: {
                 HStack {
                     Image(systemName: "arrow.left")
+                        .foregroundStyle(.ink)
                     Text("Back").fontWeight(.semibold)
+                        .foregroundStyle(.ink)
                 }
                 .foregroundStyle(.white)
                 .frame(maxWidth: .infinity)
                 .background {
-                    RoundedRectangle(cornerRadius: 16).fill(Color.customYellow)
+                    RoundedRectangle(cornerRadius: 16).fill(Color.offWhite)
                 }
             }
             .buttonStyle(ChunkyButtonStyle())
@@ -129,20 +178,26 @@ struct LessonView: View {
             .opacity(leftButtonHidden ? 0 : 1)
             .disabled(currentIndex == 0)
             .sensoryFeedback(.impact(weight: .light), trigger: isComplete)
-            
 
             Button {
                 isComplete.toggle()
                 //exits current lesson
                 if currentIndex == lastIndex {
                     // tries to find an instance in which the lessonID matches this current lessons
-                    let updateProgress = lessonProgress.filter { $0.lessonID == thisLesson.name }.first
+                    let updateProgress = lessonProgress.filter {
+                        $0.lessonID == thisLesson.name
+                    }.first
                     // if it cannot find one it moves to the else condition which creates one.
                     if let updateProgress {
                         updateProgress.isComplete = true
                         print("\(thisLesson.name) is now updated")
                     } else {
-                        modelContext.insert(LessonProgress(lessonID: thisLesson.name, isComplete: true))
+                        modelContext.insert(
+                            LessonProgress(
+                                lessonID: thisLesson.name,
+                                isComplete: true
+                            )
+                        )
                         print("model created")
                     }
                     print("view dismissed")
@@ -151,7 +206,7 @@ struct LessonView: View {
                 // this has to be checked BEFORE adding to the index or else it starts one step too early
                 if thisLesson.steps[currentIndex].requiresSpeaking {
                     let thisIndex = currentIndex
-//                    print("pressed!")
+                    //                    print("pressed!")
                     if isListening {
                         transcriber.stop()
                         isListening = false
@@ -163,7 +218,9 @@ struct LessonView: View {
                             try transcriber.start { text in
                                 transcript = text
                                 // need some way to reset it to blank automatically or only display latest word in transcript?
-                                if (transcript.contains(thisLesson.steps[currentIndex].word.thai)) {
+                                if transcript.contains(
+                                    thisLesson.steps[currentIndex].word.thai
+                                ) {
                                     print("transcript matched")
                                     isListening = false
                                     transcriber.stop()
@@ -186,53 +243,38 @@ struct LessonView: View {
                 HStack {
                     if currentIndex == lastIndex {
                         Image(systemName: "return")
+                            .foregroundStyle(.ink)
                     } else if thisLesson.steps[currentIndex].requiresSpeaking {
                         Image(systemName: "microphone.fill")
+                            .foregroundStyle(.ink)
                     } else {
                         Text("Next").fontWeight(.semibold)
+                            .foregroundStyle(.ink)
                         Image(systemName: "arrow.right")
+                            .foregroundStyle(.ink)
                     }
-//                    Image(systemName: currentSteps[currentIndex].requiresSpeaking ? "" : "arrow.right")
+                    //                    Image(systemName: currentSteps[currentIndex].requiresSpeaking ? "" : "arrow.right")
                 }
                 .foregroundStyle(.white)
                 .frame(maxWidth: .infinity)
                 .background {
-                    RoundedRectangle(cornerRadius: 16).fill(Color.customYellow)
+                    RoundedRectangle(cornerRadius: 16).fill(Color.offWhite)
                 }
             }
             .frame(maxWidth: .infinity)
             .buttonStyle(ChunkyButtonStyle())
             .sensoryFeedback(.success, trigger: completedSpeaking)
-            .sensoryFeedback(.impact(weight: currentIndex == lastIndex ? .heavy : .light), trigger: isComplete)
-//            .sensoryFeedback(.success, trigger: isComplete)
-            
+            .sensoryFeedback(
+                .impact(weight: currentIndex == lastIndex ? .heavy : .light),
+                trigger: isComplete
+            )
+            //            .sensoryFeedback(.success, trigger: isComplete)
+
         }
         .frame(height: 55)
         .padding(.horizontal, 24)
-        .groupedGeometryIfAvailable() // animate the whole row as one unit
-        
-    }
-    
-    struct PageDots: View {
-        let count: Int
-        let currentPage: Int
-        
-        var body: some View {
-            HStack (spacing: 20) {
-                ForEach(0...count, id: \.self) { i in
-                    Circle()
-                        .foregroundStyle(i == currentPage ? .customYellow : .bgTextbox)
-                        .frame(width: 12, height: 12)
-                    
-//                        .background(
-//                            Circle()
-//                                .frame(width: 12, height: 12)
-//                                .offset(y: 1)
-//                        )
-//                        .foregroundColor(i == currentPage)
-                }
-            }
-        }
+        .groupedGeometryIfAvailable()  // animate the whole row as one unit
+
     }
 }
 
@@ -249,8 +291,8 @@ private struct GroupedGeometry: ViewModifier {
     }
 }
 
-private extension View {
-    func groupedGeometryIfAvailable() -> some View {
+extension View {
+    fileprivate func groupedGeometryIfAvailable() -> some View {
         modifier(GroupedGeometry())
     }
 }

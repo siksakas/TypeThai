@@ -4,6 +4,8 @@ import SwiftData
 struct LessonListView: View {
     @Query var lessonProgress: [LessonProgress]
     
+    @Binding var showTabBar: Bool
+    
     @State private var lessonTap: Int = 0
     
     func isComplete(_ lesson: Lesson) -> Bool {
@@ -23,6 +25,12 @@ struct LessonListView: View {
                     ForEach(lessons) { lesson in
                         NavigationLink {
                             LessonView(thisLesson: lesson)
+                                .onAppear {
+                                    showTabBar = false
+                                }
+                                .onDisappear {
+                                    showTabBar = true
+                            }
                                 .toolbar(.hidden,for: .tabBar)
                         } label: {
                             HStack {
@@ -97,7 +105,8 @@ struct LessonListView: View {
 
 
 #Preview {
-    LessonListView()
+    @Previewable @State var showTabBar: Bool = true
+    LessonListView(showTabBar: $showTabBar)
         .modelContainer(for: LessonProgress.self, inMemory: true)
         .modelContainer(for: Deck.self, inMemory: true)
 }

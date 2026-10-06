@@ -16,8 +16,6 @@ struct StatsView: View {
     var completedCount: Int {
         completedLessons.count
     }
-    
-    
     var body: some View {
 
     }

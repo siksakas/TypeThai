@@ -8,29 +8,30 @@
 import SwiftUI
 
 struct ContentView: View {
+    @State private var selection: AppTab = .home
+    @State var showTabBar: Bool = true
+    
     var body: some View {
-        TabView {
-            Tab {
-                LessonListView()
-            } label: {
-                Image(systemName:"house.fill")
-                Text("Home")
+        TabView (selection: $selection) {
+            Tab (value: AppTab.home){
+                LessonListView(showTabBar: $showTabBar)
+                .toolbarVisibility(.hidden, for: .tabBar)
             }
-        
-            Tab {
-               DeckView()
-            } label: {
-                Image(systemName:"pencil")
-                Text("Practice")
+            Tab (value: AppTab.decks){
+                DeckView()
+                .toolbarVisibility(.hidden, for: .tabBar)
             }
-            
-            Tab {
+            Tab (value: AppTab.stats){
                 StatsView()
-            } label: {
-                Image(systemName: "person.fill")
-                Text("Stats")
+                .toolbarVisibility(.hidden, for: .tabBar)
             }
-            
+        }
+        .safeAreaInset(edge: .bottom) {
+            if showTabBar {
+                CustomTabBar(selection: $selection)
+                    .padding(.horizontal, 24)
+                    .padding(.bottom, 4)
+            }
         }
     }
 }

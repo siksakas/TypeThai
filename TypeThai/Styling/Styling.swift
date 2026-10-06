@@ -35,11 +35,3 @@ struct ChunkyButtonStyle: ButtonStyle {
             .sensoryFeedback(.success, trigger: pressed)
     }
 }
-
-//struct PressScaleStyle: ButtonStyle {
-//    func makeBody(configuration: Configuration) -> some View {
-//        configuration.label
-//            .scaleEffect(configuration.isPressed ? 0.96 : 1)
-//            .animation(.spring(response: 0.25, dampingFraction: 0.6), value: configuration.isPressed)
-//    }
-//}

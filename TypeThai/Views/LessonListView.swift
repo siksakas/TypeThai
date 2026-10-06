@@ -51,17 +51,16 @@ struct LessonListView: View {
                             .foregroundStyle(.black)
                             .padding(.horizontal, 20)
                             .padding(.vertical, 18)
-                            .background(
-                                RoundedRectangle(cornerRadius: 20)
-                                    .fill(Color(white: 0.98))
-                            )
-                            .background(
-                                RoundedRectangle(cornerRadius: 20)
-                                    .fill(Color(white: 0.85))
-                                    .offset(y: 5)
-                            )
+
                         }
-                        .buttonStyle(.plain)
+                        .buttonStyle(
+                            RaisedButtonStyle(
+                                face: Color(.offWhite),
+                                shadow: Color(.offWhiteShadow),
+                                cornerRadius: 20,
+                                depth: 5
+                            )
+                        )
                         .simultaneousGesture(
                             TapGesture().onEnded {
                                 lessonTap += 1

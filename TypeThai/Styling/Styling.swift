@@ -35,3 +35,29 @@ struct ChunkyButtonStyle: ButtonStyle {
             .sensoryFeedback(.success, trigger: pressed)
     }
 }
+
+struct RaisedButtonStyle: ButtonStyle {
+    var face: Color = .offWhite
+    var shadow: Color = .offWhiteShadow
+    var cornerRadius: CGFloat = 16
+    var depth: CGFloat = 5
+
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .background(
+                face,
+                in: RoundedRectangle(cornerRadius: cornerRadius)
+            )
+            .offset(y: configuration.isPressed ? depth : 0)
+            .background(
+                RoundedRectangle(cornerRadius: cornerRadius)
+                    .fill(shadow)
+                    .offset(y: depth)
+            )
+            .padding(.bottom, depth)
+            .animation(
+                .spring(response: 0.1, dampingFraction: 0.7),
+                value: configuration.isPressed
+            )
+    }
+}

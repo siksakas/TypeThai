@@ -109,17 +109,15 @@ struct LessonView: View {
                     .font(.system(size: 16, weight: .bold))
                     .foregroundStyle(.offWhiteShadow)
                     .frame(width: 50, height: 35)
-                    .background(
-                        RoundedRectangle(cornerRadius: 16)
-                            .fill(Color.offWhite)
-                    )
-                    .background(
-                        RoundedRectangle(cornerRadius: 16)
-                            .fill(Color.offWhiteShadow)
-                            .offset(y: 3)
-                    )
             }
-            .buttonStyle(.plain)
+            .buttonStyle(
+                RaisedButtonStyle(
+                    face: Color(white: 0.98),
+                    shadow: Color(white: 0.85),
+                    cornerRadius: 20,
+                    depth: 5
+                )
+            )
             .padding(.leading, 24)
             .padding(.trailing,12)
 
@@ -133,17 +131,15 @@ struct LessonView: View {
                     .font(.system(size: 16, weight: .bold))
                     .foregroundStyle(.offWhiteShadow)
                     .frame(width: 50, height: 35)
-                    .background(
-                        RoundedRectangle(cornerRadius:16)
-                            .fill(Color.offWhite)
-                    )
-                    .background(
-                        RoundedRectangle(cornerRadius: 16)
-                            .fill(Color.offWhiteShadow)
-                            .offset(y: 3)
-                    )
             }
-            .buttonStyle(.plain)
+            .buttonStyle(
+                RaisedButtonStyle(
+                    face: Color(white: 0.98),
+                    shadow: Color(white: 0.85),
+                    cornerRadius: 20,
+                    depth: 5
+                )
+            )
             .padding(.trailing, 24)
             .padding(.leading,12)
         }

@@ -22,6 +22,9 @@ struct LessonListView: View {
                 Logo()
                     .padding(.top,10)
                 VStack(spacing: 20) {
+                    
+                    ProgressionView()
+                    
                     ForEach(lessons) { lesson in
                         NavigationLink {
                             LessonView(thisLesson: lesson)

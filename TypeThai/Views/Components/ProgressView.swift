@@ -92,7 +92,7 @@ struct ProgressionView: View {
                         .offset(y:5)
                 )
         )
-        .padding(24)
+//        .padding(24)
     }
     
     var ProgressDots: some View {
@@ -120,16 +120,25 @@ struct ProgressionView: View {
             Button {
                 
             } label: {
-                Text("Start")
+                Text("Start Lesson!")
+                    .font(.largeTitle)
+                    .fontWeight(.semibold)
+                    .fontDesign(.rounded)
+                    .frame(maxWidth:.infinity)
+                    .frame(height: 70)
             }
+            .buttonStyle(RaisedButtonStyle(face:.customYellow, shadow: .customYellowDeep))
+            
         }
+        
         .padding(.horizontal,22)
-        .padding(.top,40)
+        .padding(.top,20)
     }
 }
 
 #Preview {
     ProgressionView()
         .modelContainer(for: LessonProgress.self, inMemory: true)
+        .padding(24)
 }
 

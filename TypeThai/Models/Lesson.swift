@@ -8,6 +8,7 @@ import Foundation
 
 struct Lesson: Identifiable {
     var id = UUID()
+    let order: Int
     let name: String
     let desc: String
     let steps: [LessonStep]

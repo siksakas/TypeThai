@@ -13,6 +13,12 @@ struct LessonView: View {
     @Environment(\.modelContext) var modelContext
     @Environment(\.dismiss) private var dismiss
     
+    var progress: LessonProgress? {
+        lessonProgress.filter {
+            $0.lessonID == thisLesson.name
+        }.first
+    }
+    
     var thisLesson: Lesson
     
     @State var currentIndex = 0
@@ -94,6 +100,23 @@ struct LessonView: View {
         .animation(.easeInOut(duration: 0.25), value: currentIndex)
         .task {
             requestPermissions()
+            
+            updateProgress()
+        }
+    }
+    
+    private func updateProgress() {
+        if progress == nil {
+            modelContext.insert(
+                LessonProgress(
+                    lessonID: thisLesson.name,
+                    isComplete: false,
+                    currentIndex: 0,
+                    totalIndex: thisLesson.steps.count
+                )
+            )
+        } else {
+            progress?.currentIndex = currentIndex
         }
     }
 
@@ -103,6 +126,7 @@ struct LessonView: View {
                 if isListening {
                     stopListening()
                 }
+                updateProgress()
                 dismiss()
             } label: {
                 Image(systemName: "arrowshape.turn.up.backward.fill")
@@ -148,6 +172,7 @@ struct LessonView: View {
 
     private var navigationButtons: some View {
         HStack(spacing: leftButtonHidden ? 0 : 12) {
+            //left nav btn
             Button {
                 isComplete.toggle()
                 transcript = ""
@@ -173,23 +198,26 @@ struct LessonView: View {
             .disabled(currentIndex == 0)
             .sensoryFeedback(.impact(weight: .light), trigger: isComplete)
 
+            // right nav btn
             Button {
                 isComplete.toggle()
                 //exits current lesson
                 if currentIndex == lastIndex {
-                    // tries to find an instance in which the lessonID matches this current lessons
-                    let updateProgress = lessonProgress.filter {
-                        $0.lessonID == thisLesson.name
-                    }.first
-                    // if it cannot find one it moves to the else condition which creates one.
-                    if let updateProgress {
-                        updateProgress.isComplete = true
+//                    // tries to find an instance in which the lessonID matches this current lessons
+//                    let updateProgress = lessonProgress.filter {
+//                        $0.lessonID == thisLesson.name
+//                    }.first
+//                    // if it cannot find one it moves to the else condition which creates one.
+                    if let progress {
+                        progress.isComplete = true
                         print("\(thisLesson.name) is now updated")
                     } else {
                         modelContext.insert(
                             LessonProgress(
                                 lessonID: thisLesson.name,
-                                isComplete: true
+                                isComplete: true,
+                                currentIndex: currentIndex,
+                                totalIndex: thisLesson.steps.count
                             )
                         )
                         print("model created")

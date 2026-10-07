@@ -12,9 +12,13 @@ import SwiftData
 final class LessonProgress {
     var lessonID: String
     var isComplete: Bool
+    var currentIndex: Int
+    var totalIndex: Int
     
-    init(lessonID: String, isComplete: Bool) {
+    init(lessonID: String, isComplete: Bool, currentIndex: Int, totalIndex: Int) {
         self.lessonID = lessonID
         self.isComplete = isComplete
+        self.currentIndex = currentIndex
+        self.totalIndex = totalIndex
     }
 }

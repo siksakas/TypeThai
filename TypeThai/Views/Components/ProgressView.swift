@@ -48,23 +48,24 @@ struct ProgressionView: View {
     }
     
     var body: some View {
-        VStack {
+        VStack (spacing: 0 ){
             HStack {
                 Text(latestLessonStarted ? "CONTINUE" : "START")
                     .fontWeight(.semibold)
                     .font(.subheadline)
                     .fontDesign(.rounded)
-                    .foregroundStyle(.offWhiteShadow)
+                    .foregroundStyle(.darkBlue)
                 Spacer()
                 Text("\(progress) / \(total)")
                     .fontWeight(.semibold)
                     .font(.subheadline)
                     .fontDesign(.rounded)
-                    .foregroundStyle(.offWhiteShadow)
+                    .foregroundStyle(.darkBlue)
                 
             }
             .padding(.horizontal,20)
             .padding(.top,20)
+            .padding(.bottom,5)
             
             HStack {
                 Text(lessonToDisplay.name)
@@ -74,9 +75,10 @@ struct ProgressionView: View {
                 Spacer()
             }
             .padding(.horizontal,20)
-            .padding(.top,6)
+            .padding(.bottom,15)
             
             ProgressDots
+                .padding(.bottom, 10)
             
             StartButton
             
@@ -85,7 +87,7 @@ struct ProgressionView: View {
         .frame(maxWidth: .infinity, maxHeight: 250)
         .background(
             RoundedRectangle(cornerRadius: 20)
-                .fill(Color.offWhite)
+                .fill(Color.white)
                 .background(
                     RoundedRectangle(cornerRadius: 20)
                         .fill(Color.offWhiteShadow)
@@ -112,27 +114,28 @@ struct ProgressionView: View {
                     .foregroundStyle(fillColour)
             }
         }
-        .padding(.horizontal,22)
+        .padding(.horizontal,23)
     }
     
     var StartButton: some View {
         HStack {
             Button {
-                
+                // go to view
             } label: {
-                Text("Start Lesson!")
-                    .font(.largeTitle)
+                Text(latestLessonStarted ? "Continue" : "Start!")
+                    .font(.title2)
                     .fontWeight(.semibold)
                     .fontDesign(.rounded)
                     .frame(maxWidth:.infinity)
-                    .frame(height: 70)
+                    .frame(height: 50)
             }
             .buttonStyle(RaisedButtonStyle(face:.customYellow, shadow: .customYellowDeep))
             
         }
         
         .padding(.horizontal,22)
-        .padding(.top,20)
+        .padding(.top,10)
+        .padding(.bottom,10)
     }
 }
 
